@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+  labels:
+    app: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+  template:
+    metadata:
+      labels:
+        app: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+    spec:
+      containers:
+      - name: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+        image: 519901771307.dkr.ecr.us-west-2.amazonaws.com/fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor-service:{{TAG}}
+        env:
+        - name: environment
+          value: "uat"
+        - name: LOG_LEVEL_SYSTEM
+          value: "INFO"
+        - name: LOG_LEVEL_BUSINESS
+          value: "ERROR"
+        - name: LOGS_FOLDER
+          value: "/var/log/fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor"
+        ports:
+        - containerPort: 8084
+        resources:
+          limits:
+            cpu: 200m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 1Gi
+      restartPolicy: Always

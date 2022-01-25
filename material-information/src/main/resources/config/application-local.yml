@@ -1,0 +1,21 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    #jndi-name: jdbc/Sisrev
+    #    jndi-name: jdbc/SISREV-DS
+    #    jndi-name: jdbc/mantenimiento-ds
+    url: jdbc:oracle:thin:@//10.86.1.135:1521/PMMDEV
+    #    username: SEGEXT
+    #    password: segextdesa
+    username: SWLI
+    password: 22SD#nITgr#p22mM
+    driver-class-name: oracle.jdbc.OracleDriver
+    jpa:
+      hibernate:
+        ddl-auto: none
+      database-platform: org.hibernate.dialect.Oracle10gDialect
+    application:
+      url-session: https://dev-logisticainversa.solucionesfps.pe/users/signin
+      name: fps-expc-ms-com.farmaciasperuanas.pmmli.materialinformation-materialinformation

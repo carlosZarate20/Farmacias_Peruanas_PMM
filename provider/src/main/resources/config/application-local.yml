@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    #jndi-name: jdbc/Sisrev
+    #    jndi-name: jdbc/SISREV-DS
+    #    jndi-name: jdbc/mantenimiento-ds
+    url: jdbc:oracle:thin:@//10.86.1.44/PMMDEV
+    #    username: SEGEXT
+    #    password: segextdesa
+    username: SWLI
+    password: 22SD#nITgr#p22mM
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximun-pool-size: 3
+    jpa:
+      hibernate:
+        ddl-auto: none
+      database-platform: org.hibernate.dialect.Oracle10gDialect
+    application:
+      url-session: https://dev-logisticainversa.solucionesfps.pe/users/signin
