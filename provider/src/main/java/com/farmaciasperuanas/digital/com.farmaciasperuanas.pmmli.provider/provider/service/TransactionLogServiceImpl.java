@@ -23,6 +23,8 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         try{
             if(status){
                 state = "Correcto";
+            } else {
+                state = "Fallido";
             }
 
             cantTransaction = transactionLogRepository.getCanTransaction(codeTransaction);

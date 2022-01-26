@@ -131,7 +131,7 @@ public class BarcodeServiceImpl implements BarcodeService{
 
                 transactionLogService.saveTransactionLog("Maestro Barcode", "M",
                         "MB", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

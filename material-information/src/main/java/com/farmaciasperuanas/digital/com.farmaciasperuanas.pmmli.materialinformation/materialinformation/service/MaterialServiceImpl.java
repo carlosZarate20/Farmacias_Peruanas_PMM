@@ -106,7 +106,7 @@ public class MaterialServiceImpl implements MaterialService{
 
                 transactionLogService.saveTransactionLog("Maestro Material", "M",
                         "MM", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

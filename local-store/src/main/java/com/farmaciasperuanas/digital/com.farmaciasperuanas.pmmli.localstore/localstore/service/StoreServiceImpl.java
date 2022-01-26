@@ -106,7 +106,7 @@ public class StoreServiceImpl implements StoreService{
 
                 transactionLogService.saveTransactionLog("Maestro Store", "M",
                         "MS", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

@@ -115,7 +115,7 @@ public class MaterialLotServiceImpl implements MaterialLotService{
 
                 transactionLogService.saveTransactionLog("Maestro Material Lot", "M",
                         "MML", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

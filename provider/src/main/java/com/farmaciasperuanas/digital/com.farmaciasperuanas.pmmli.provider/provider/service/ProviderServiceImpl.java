@@ -120,7 +120,7 @@ public class ProviderServiceImpl implements ProviderService {
 
                 transactionLogService.saveTransactionLog("Maestro Provider", "M",
                         "MP", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else{
                 responseDto.setCode(HttpStatus.OK.value());
