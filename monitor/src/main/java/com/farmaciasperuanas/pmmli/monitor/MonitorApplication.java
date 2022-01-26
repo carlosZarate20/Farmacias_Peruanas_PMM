@@ -2,6 +2,7 @@ package com.farmaciasperuanas.pmmli.monitor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Main class for running Spring Boot framework.<br/>
@@ -22,6 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication
+@EnableScheduling
 public class MonitorApplication {
 
   /**
