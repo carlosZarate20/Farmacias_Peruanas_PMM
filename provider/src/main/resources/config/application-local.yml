@@ -6,7 +6,7 @@ spring:
     #jndi-name: jdbc/Sisrev
     #    jndi-name: jdbc/SISREV-DS
     #    jndi-name: jdbc/mantenimiento-ds
-    url: jdbc:oracle:thin:@//10.86.1.44/PMMDEV
+    url: jdbc:oracle:thin:@//10.86.1.44:1521/PMMDEV
     #    username: SEGEXT
     #    password: segextdesa
     username: SWLI

@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -33,6 +34,9 @@ public class StoreServiceImpl implements StoreService{
     @Autowired
     private StoreRepository storeRepository;
 
+    @Autowired
+    private TransactionLogService transactionLogService;
+
     @Override
     public ResponseDto enviarTienda(HttpServletRequest httpSession) {
 
@@ -41,6 +45,8 @@ public class StoreServiceImpl implements StoreService{
         ResponseDto responseDto = new ResponseDto();
         ResponseApi responseApi = new ResponseApi();
         String urlString = "https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_store";
+        String responseBody = "";
+        String requestBody = "";
         try{
             storeDtoList = getListStore();
 
@@ -58,8 +64,8 @@ public class StoreServiceImpl implements StoreService{
                 httpUrlConnection.setRequestProperty("Content-Type", "application/json");
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
-            /*httpUrlConnection.setRequestProperty("applicationCode", applicationCode);
-            httpUrlConnection.setRequestProperty("transactionId", transactionId);*/
+                /*httpUrlConnection.setRequestProperty("applicationCode", applicationCode);
+                httpUrlConnection.setRequestProperty("transactionId", transactionId);*/
                 httpUrlConnection.setRequestMethod("POST");
 
                 String input = GSON.toJson(storeDtoList);
@@ -80,10 +86,26 @@ public class StoreServiceImpl implements StoreService{
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
-                responseDto.setCode(HttpStatus.OK.value());
-                responseDto.setStatus(false);
-                responseDto.setBody(responseApi);
-                responseDto.setMessage("Registro Correcto");
+                if(responseApi.getCode().equalsIgnoreCase("ok")){
+                    for(StoreDto storeDto: storeDtoList){
+                        storeRepository.updateStore(storeDto.getCodigo());
+                    }
+                    responseDto.setCode(HttpStatus.OK.value());
+                    responseDto.setStatus(true);
+                    responseDto.setBody(responseApi);
+                    responseDto.setMessage("Registro Correcto");
+                } else {
+                    responseDto.setCode(HttpStatus.OK.value());
+                    responseDto.setStatus(false);
+                    responseDto.setBody(responseApi);
+                    responseDto.setMessage("Ocurrio un error");
+                }
+
+                responseBody = String.valueOf(responseDto);
+
+                transactionLogService.saveTransactionLog("Maestro Store", "M",
+                        "MS", "Data Maestra",
+                        true, requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
