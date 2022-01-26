@@ -91,6 +91,9 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 httpUrlConnection.disconnect();
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
+                    for(MaterialProviderDto materialProviderDto: materialProviderDtoList){
+                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka());
+                    }
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
@@ -103,6 +106,8 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 }
 
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(materialProviderDtoList);
+
                 transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
                         "MMP", "Data Maestra",
                         true, requestBody, responseBody);

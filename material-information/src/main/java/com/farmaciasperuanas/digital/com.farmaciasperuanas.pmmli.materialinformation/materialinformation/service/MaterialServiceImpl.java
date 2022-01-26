@@ -102,6 +102,8 @@ public class MaterialServiceImpl implements MaterialService{
                 }
 
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(materialDtoList);
+
                 transactionLogService.saveTransactionLog("Maestro Material", "M",
                         "MM", "Data Maestra",
                         true, requestBody, responseBody);

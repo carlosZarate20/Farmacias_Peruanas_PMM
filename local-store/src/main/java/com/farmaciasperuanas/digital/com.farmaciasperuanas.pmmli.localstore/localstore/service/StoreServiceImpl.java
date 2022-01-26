@@ -102,6 +102,7 @@ public class StoreServiceImpl implements StoreService{
                 }
 
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(storeDtoList);
 
                 transactionLogService.saveTransactionLog("Maestro Store", "M",
                         "MS", "Data Maestra",
