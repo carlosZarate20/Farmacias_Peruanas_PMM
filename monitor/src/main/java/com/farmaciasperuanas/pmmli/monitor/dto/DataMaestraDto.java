@@ -18,4 +18,10 @@ public class DataMaestraDto {
     private String codeTransaction;
     private String typeTransaction;
 
+
+
+
+
+
+
 }
