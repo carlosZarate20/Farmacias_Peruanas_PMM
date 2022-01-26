@@ -51,12 +51,10 @@ public class ProviderServiceImpl implements ProviderService {
         ResponseApi responseApi = new ResponseApi();
         String responseBody = "";
         String requestBody = "";
-        int index = 0;
 
         try {
             //Traer datos para insertar a LI
             providerDtoList = getListProvider();
-            String[] requestArray = new String[providerDtoList.size()];
 
             if(providerDtoList.size() != 0){
                 String authTokenHeader  = httpSession.getHeader("Authorization");
@@ -99,13 +97,13 @@ public class ProviderServiceImpl implements ProviderService {
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
-                for(ProviderDto providerDto: providerDtoList)
-                {
-                    providerRepository.updateProvider(providerDto.getCodigoSap());
-                    requestArray[index] = String.valueOf(providerDto.toString());
-                    index++;
-                }
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
+
+                    for(ProviderDto providerDto: providerDtoList)
+                    {
+                        providerRepository.updateProvider(providerDto.getCodigoSap());
+                    }
+
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
@@ -118,11 +116,11 @@ public class ProviderServiceImpl implements ProviderService {
                 }
 
                 responseBody = String.valueOf(responseDto);
-                requestBody = Arrays.toString(requestArray);
+                requestBody = GSON.toJson(providerDtoList);
 
                 transactionLogService.saveTransactionLog("Maestro Provider", "M",
                         "MP", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else{
                 responseDto.setCode(HttpStatus.OK.value());

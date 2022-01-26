@@ -111,9 +111,11 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                     responseDto.setMessage("Ocurrio un error");
                 }
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(materialLotDtoList);
+
                 transactionLogService.saveTransactionLog("Maestro Material Lot", "M",
                         "MML", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

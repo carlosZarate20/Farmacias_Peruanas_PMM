@@ -127,9 +127,11 @@ public class BarcodeServiceImpl implements BarcodeService{
                 }
 
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(listBarcode);
+
                 transactionLogService.saveTransactionLog("Maestro Barcode", "M",
                         "MB", "Data Maestra",
-                        true, requestBody, responseBody);
+                        responseDto.isStatus(), requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

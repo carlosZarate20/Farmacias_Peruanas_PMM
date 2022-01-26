@@ -49,4 +49,10 @@ public class Store implements Serializable {
 
     @Column(name = "SOCIETY")
     private String society;
+
+    @Column(name = "UPDATED")
+    private Long updated;
+
+    @Column(name = "FLAGLI")
+    private Long flagLi;
 }

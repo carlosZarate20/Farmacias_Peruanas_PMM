@@ -1,6 +1,6 @@
-package com.farmaciasperuanas.digital.com.farmaciasperuanas.pmmli.provider.provider.service;
+package com.farmaciasperuanas.digital.com.farmaciasperuanas.pmmli.localstore.localstore.service;
 
-import com.farmaciasperuanas.digital.com.farmaciasperuanas.pmmli.provider.provider.repository.TransactionLogRepository;
+import com.farmaciasperuanas.digital.com.farmaciasperuanas.pmmli.localstore.localstore.repository.TransactionLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Service
-public class TransactionLogServiceImpl implements TransactionLogService{
+public class TransactionLogServiceImpl implements TransactionLogService {
 
     @Autowired
     private TransactionLogRepository transactionLogRepository;
@@ -18,10 +18,10 @@ public class TransactionLogServiceImpl implements TransactionLogService{
     public void saveTransactionLog(String nameTransaction, String codeOp, String codeTransaction, String typeTransaction, boolean status, String requestBody, String responseBody) {
         Integer cantTransaction = 0;
         String state = "";
-        String dateTransaction ="";
+        String dateTransaction = "";
 
-        try{
-            if(status){
+        try {
+            if (status) {
                 state = "Correcto";
             } else {
                 state = "Fallido";
@@ -39,7 +39,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             transactionLogRepository.saveTransactionLog(nameTransaction, codeOp, codeTransaction,
                     typeTransaction, cantTransaction, dateTransaction, state,
                     requestBody, responseBody);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

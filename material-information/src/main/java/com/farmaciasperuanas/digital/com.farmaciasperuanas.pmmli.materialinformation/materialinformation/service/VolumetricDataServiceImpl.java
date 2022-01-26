@@ -103,10 +103,11 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 }
 
                 responseBody = String.valueOf(responseDto);
+                requestBody = GSON.toJson(volumetricDataDtoList);
+
                 transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
                         "MVD", "Data Maestra",
-                        true, requestBody, responseBody);
-
+                        responseDto.isStatus(), requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
