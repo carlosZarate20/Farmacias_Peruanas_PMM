@@ -16,7 +16,7 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "where sl.CODE = 'M' and sl.CODE_TRANSACTION = sw.CODE_TRANSACTION) AS CANT_TRANSACTION, " +
             "(Select Max(si.DATE_TRANSACTION) from SWLI.TRANSACTION_LOG si " +
             "where si.CODE = 'M' and si.CODE_TRANSACTION = sw.CODE_TRANSACTION) AS DATE_TRANSACTION, " +
-            "CODE_TRANSACTION, TYPE_TRANSACTION " +
+            "CODE_TRANSACTION, TYPE_TRANSACTION, TASK_STATE " +
             "from SWLI.TRANSACTION_LOG sw " +
             "where sw.CODE = 'M' " +
             "order by NAME_TRANSACTION", nativeQuery = true)

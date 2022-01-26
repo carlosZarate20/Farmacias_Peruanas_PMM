@@ -29,6 +29,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             dataMaestraDto.setUltimaEjecucion(dt.format(object[2]));
             dataMaestraDto.setCodeTransaction(String.valueOf(object[3]));
             dataMaestraDto.setTypeTransaction(String.valueOf(object[4]));
+            dataMaestraDto.setTaskState(String.valueOf(object[5]));
 
             dataMaestraDtoList.add(dataMaestraDto);
         }

@@ -35,6 +35,9 @@ public class TransactionLog {
     @Column(name = "STATE")
     private String state;
 
+    @Column(name = "TASK_STATE")
+    private String taskState;
+
     @Column(name = "CRON_EXPRESSION")
     private String cronExpression;
 

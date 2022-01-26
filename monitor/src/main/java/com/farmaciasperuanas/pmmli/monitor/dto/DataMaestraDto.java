@@ -17,11 +17,5 @@ public class DataMaestraDto {
     private String ultimaEjecucion;
     private String codeTransaction;
     private String typeTransaction;
-
-
-
-
-
-
-
+    private String taskState;
 }
