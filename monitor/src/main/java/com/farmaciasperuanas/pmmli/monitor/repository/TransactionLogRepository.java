@@ -55,4 +55,14 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "from SWLI.TRANSACTION_LOG " +
             "where ID_TRANSACTION_LOG = :id", nativeQuery = true)
     List<Object[]> getTransactionDetail(@Param("id") Integer id);
+
+    @Query(value = "select distinct " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE = 'M' and STATE = 'Fallido') as MAESTRO_FALLIDO, " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE = 'M' and STATE = 'Correcto') as MAESTRO_CORRECTO " +
+            "from SWLI.TRANSACTION_LOG " +
+            "where DATE_TRANSACTION >= to_date ('2022' || '01', 'YYYYMM') " +
+            "and DATE_TRANSACTION <= add_months(to_date ('2022' || '01', 'YYYYMM'), 1);", nativeQuery = true)
+    List<Object[]> getCantDataMaestraMonth(@Param("date") String date, @Param("month") String month);
 }
