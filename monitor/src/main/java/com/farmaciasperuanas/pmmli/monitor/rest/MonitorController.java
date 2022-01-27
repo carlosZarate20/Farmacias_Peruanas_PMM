@@ -3,6 +3,7 @@ package com.farmaciasperuanas.pmmli.monitor.rest;
 import com.farmaciasperuanas.pmmli.monitor.dto.DataMaestraDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.ResponseDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.TaskCronDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.TransactionDto;
 import com.farmaciasperuanas.pmmli.monitor.service.ProviderService;
 import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
@@ -64,6 +65,11 @@ public class MonitorController {
   @PostMapping("/enviar/{typeOp}")
   public ResponseDto ejecutarProceso(@PathVariable("typeOp") String typeOp, HttpServletRequest httpSession){
       return providerService.ejecutarProceso(typeOp, httpSession);
+  }
+
+  @GetMapping("/listarTransactionDashboard")
+  public List<TransactionDto> listarTransactionDashboard(){
+      return transactionLogService.listarTransactionDashboard();
   }
 
   @PostMapping(path="/initJobProcess")

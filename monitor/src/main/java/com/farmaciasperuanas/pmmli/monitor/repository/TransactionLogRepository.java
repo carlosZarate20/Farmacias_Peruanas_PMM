@@ -24,4 +24,13 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
 
     @Query(value = "select NAME_TRANSACTION, CANT_TRANSACTION, DATE_TRANSACTION from TRANSACTION_LOG", nativeQuery = true)
     List<Object[]> getTransactionLog();
+
+    @Query(value = "select * " +
+            "from ( " +
+            "select ID_TRANSACTION_LOG, NAME_TRANSACTION, STATE, DATE_TRANSACTION " +
+            "from SWLI.TRANSACTION_LOG " +
+            "where CANT_TRANSACTION <> 0 " +
+            "order by ID_TRANSACTION_LOG desc) " +
+            "where rownum <= 5 order by ID_TRANSACTION_LOG asc", nativeQuery = true)
+    List<Object[]> getDahsboardTransaction();
 }
