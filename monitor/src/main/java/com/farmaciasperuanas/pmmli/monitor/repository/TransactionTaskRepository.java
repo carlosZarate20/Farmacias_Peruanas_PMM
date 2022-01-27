@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface TransactionTaskRepository extends JpaRepository<TransactionTask, Long>, JpaSpecificationExecutor<TransactionLog> {
+public interface TransactionTaskRepository extends JpaRepository<TransactionTask, Long>, JpaSpecificationExecutor<TransactionTask> {
     @Query(value = "select A.* from SWLI.TRANSACTION_TASK A " +
             "where A.CODE_TRANSACTION = :code", nativeQuery = true)
-    TransactionTask getTransactionTaskByCode(@Param("code") String code);
+    TransactionTask getTransactionTaskByCodeWork(@Param("code") String code);
 }

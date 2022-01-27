@@ -15,7 +15,7 @@ public class TransactionTaskService {
     TransactionTaskRepository transactionTaskRepository;
 
     public TransactionTask getTransactionTaskByCode (String code) {
-        return  transactionTaskRepository.getTransactionTaskByCode(code);
+        return  transactionTaskRepository.getTransactionTaskByCodeWork(code);
     }
 
 }
