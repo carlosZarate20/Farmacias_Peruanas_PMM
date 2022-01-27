@@ -18,4 +18,5 @@ public class DataMaestraDto {
     private String codeTransaction;
     private String typeTransaction;
     private String taskState;
+    private String cronExpression;
 }

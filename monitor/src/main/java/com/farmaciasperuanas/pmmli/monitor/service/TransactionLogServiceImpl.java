@@ -34,9 +34,9 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             if(object[5] != null){
                 dataMaestraDto.setUltimaEjecucion(dt.format(object[5]));
             }else {
-                dataMaestraDto.setUltimaEjecucion(" ");
+                dataMaestraDto.setUltimaEjecucion("");
             }
-
+            dataMaestraDto.setCronExpression( object[6] == null ? null : String.valueOf(object[6]));
             dataMaestraDtoList.add(dataMaestraDto);
         }
         return dataMaestraDtoList;

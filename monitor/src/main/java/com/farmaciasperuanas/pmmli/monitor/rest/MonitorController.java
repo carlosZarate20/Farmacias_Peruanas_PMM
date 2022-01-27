@@ -1,6 +1,8 @@
 package com.farmaciasperuanas.pmmli.monitor.rest;
 
 import com.farmaciasperuanas.pmmli.monitor.dto.*;
+import com.farmaciasperuanas.pmmli.monitor.entity.TransactionTask;
+import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTaskRepository;
 import com.farmaciasperuanas.pmmli.monitor.service.ProviderService;
 import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
@@ -54,6 +56,9 @@ public class MonitorController {
   @Autowired
   private MasterProccessTask2 masterProccessTask2;
 
+  @Autowired
+  private TransactionTaskRepository transactionTaskService;
+
   @RequestMapping("/listaDataMaestra")
   public List<DataMaestraDto> listarDataMaestra() {
     return transactionLogService.getDatosMaestros();
@@ -78,39 +83,55 @@ public class MonitorController {
   public void scheduleTask(@RequestBody TaskCronDto dto) {
     try {
 
-      String jobId = MessageFormat.format("master_process_{0}",dto.getId());
-      Integer hour = dto.getCron().getHours();
-      Integer minutes = dto.getCron().getMinutes();
-      taskSchedulingService.removeScheduledTask(jobId);
-      switch (dto.getId()) {
-        case 1:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?", minutes.toString(),hour.toString()));
-          break;
-        case 2:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask2, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        case 3:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        case 4:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        case 5:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        case 6:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        case 7:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
-          break;
-        default:
-          break;
+      if (dto.isActivated)
+      {
+        TransactionTask entity = transactionTaskService.getTransactionTaskByCode(dto.getId());
+        entity.setTaskState("A");
+        String jobId = MessageFormat.format("master_process_{0}",dto.getId());
+        Integer hour = dto.getCron().getHours();
+        Integer minutes = dto.getCron().getMinutes();
+        taskSchedulingService.removeScheduledTask(jobId);
+        String cronExpression = MessageFormat.format("0 {0} {1} * * ?", minutes.toString(),hour.toString());
+        entity.setCronExpression(cronExpression);
+        transactionTaskService.save(entity);
+        switch (dto.getId()) {
+          case "MM":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          case "MP":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask2, cronExpression );
+            break;
+          case "MMP":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          case "MML":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          case "MVD":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          case "MB":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          case "MS":
+            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            break;
+          default:
+            break;
+        }
       }
+
+
 
     }catch (Exception e)
     {
       logger.error("Ocurrió un error al iniciar el job del proceso 1", e);
     }
+
+  }
+
+    @GetMapping("/getTransactionTask/{code}")
+  public TransactionTask listarTransactionDashboard(@PathVariable("code") String code){
+    return transactionTaskService.getTransactionTaskByCode(code);
   }
 }
