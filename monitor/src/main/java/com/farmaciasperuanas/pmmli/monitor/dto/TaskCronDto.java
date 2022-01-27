@@ -13,6 +13,6 @@ import java.util.Date;
 @Builder
 public class TaskCronDto {
     public Date cron;
-    public Integer id;
+    public String id;
     public boolean isActivated;
 }

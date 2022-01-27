@@ -31,8 +31,9 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "NVL((Select Max(sl.CANT_TRANSACTION) from SWLI.TRANSACTION_LOG sl " +
             "where sl.CODE = 'M' and sl.CODE_TRANSACTION = tk.CODE_TRANSACTION), 0) AS CANT_TRANSACTION, " +
             "NVL((Select Max(si.DATE_TRANSACTION) from SWLI.TRANSACTION_LOG si " +
-            "where si.CODE = 'M' and si.CODE_TRANSACTION = tk.CODE_TRANSACTION), null) AS DATE_TRANSACTION " +
-            "from SWLI.TRANSACTION_TASK tk", nativeQuery = true)
+            "where si.CODE = 'M' and si.CODE_TRANSACTION = tk.CODE_TRANSACTION), null) AS DATE_TRANSACTION, " +
+            "tk.CRON_EXPRESSION " +
+            "from SWLI.TRANSACTION_TASK tk ", nativeQuery = true)
     List<Object[]> getDataMaestra();
 
     @Query(value = "select NAME_TRANSACTION, CANT_TRANSACTION, DATE_TRANSACTION from TRANSACTION_LOG", nativeQuery = true)

@@ -13,8 +13,8 @@ public class TransactionTask {
     @Column(name = "ID_TRANSACTION_TASK")
     private Integer idTransactionTask;
 
-    @Column(name = "NAME_TRANSACTION")
-    private String nameTransaction;
+    @Column(name = "NAME_TASK")
+    private String nameTask;
 
     @Column(name = "CODE")
     private String code;
