@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class TaskCronDto {
-    private String cron;
-    private Integer id;
+    public Date cron;
+    public Integer id;
+    public boolean isActivated;
 }

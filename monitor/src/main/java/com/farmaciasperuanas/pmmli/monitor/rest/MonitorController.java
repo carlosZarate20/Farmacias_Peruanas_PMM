@@ -77,29 +77,32 @@ public class MonitorController {
   @PostMapping(path="/initJobProcess")
   public void scheduleTask(@RequestBody TaskCronDto dto) {
     try {
+
       String jobId = MessageFormat.format("master_process_{0}",dto.getId());
+      Integer hour = dto.getCron().getHours();
+      Integer minutes = dto.getCron().getMinutes();
       taskSchedulingService.removeScheduledTask(jobId);
       switch (dto.getId()) {
         case 1:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?", minutes.toString(),hour.toString()));
           break;
         case 2:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask2, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask2, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         case 3:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         case 4:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         case 5:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         case 6:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         case 7:
-          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 * */{0} ? * *", dto.getCron()));
+          taskSchedulingService.scheduleTask(jobId, masterProccessTask1, MessageFormat.format("0 {0} {1} * * ?",  minutes.toString(),hour.toString()));
           break;
         default:
           break;
