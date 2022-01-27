@@ -11,5 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CantMaestroDto {
     private Integer cantMaestroCorrecto;
-    private Integer getCantMaestroFallido;
+    private Integer cantMaestroFallido;
+    private Integer cantTransactionCorrecto;
+    private Integer cantTransactionFallido;
+    private Integer cantMaestros;
+    private Integer cantTransacciones;
+    private Integer total;
 }

@@ -82,10 +82,9 @@ public class MonitorController {
   @PostMapping(path="/initJobProcess")
   public void scheduleTask(@RequestBody TaskCronDto dto) {
     try {
-
+      TransactionTask entity = transactionTaskService.getTransactionTaskByCode(dto.getId());
       if (dto.isActivated)
       {
-        TransactionTask entity = transactionTaskService.getTransactionTaskByCode(dto.getId());
         entity.setTaskState("A");
         String jobId = MessageFormat.format("master_process_{0}",dto.getId());
         Integer hour = dto.getCron().getHours();
@@ -119,8 +118,11 @@ public class MonitorController {
           default:
             break;
         }
+      } else {
+        entity.setTaskState("I");
+        entity.setCronExpression(null);
+        transactionTaskService.save(entity);
       }
-
 
 
     }catch (Exception e)
@@ -130,8 +132,13 @@ public class MonitorController {
 
   }
 
-    @GetMapping("/getTransactionTask/{code}")
+  @GetMapping("/getTransactionTask/{code}")
   public TransactionTask listarTransactionDashboard(@PathVariable("code") String code){
     return transactionTaskService.getTransactionTaskByCode(code);
+  }
+
+  @GetMapping("/getCantTransactionMonth")
+  public CantMaestroDto getCantTransactionMonth(){
+    return transactionLogService.getCantidadDatosMonth();
   }
 }

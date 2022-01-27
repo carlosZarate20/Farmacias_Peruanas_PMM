@@ -57,13 +57,24 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "where ID_TRANSACTION_LOG = :id", nativeQuery = true)
     List<Object[]> getTransactionDetail(@Param("id") Integer id);
 
+
     @Query(value = "select distinct " +
             "(select Count(*) from SWLI.TRANSACTION_LOG " +
             "where CODE = 'M' and STATE = 'Fallido') as MAESTRO_FALLIDO, " +
             "(select Count(*) from SWLI.TRANSACTION_LOG " +
-            "where CODE = 'M' and STATE = 'Correcto') as MAESTRO_CORRECTO " +
-            "from SWLI.TRANSACTION_LOG " +
-            "where DATE_TRANSACTION >= to_date ('2022' || '01', 'YYYYMM') " +
-            "and DATE_TRANSACTION <= add_months(to_date ('2022' || '01', 'YYYYMM'), 1);", nativeQuery = true)
-    List<Object[]> getCantDataMaestraMonth(@Param("date") String date, @Param("month") String month);
+            "where CODE = 'M' and STATE = 'Correcto') as MAESTRO_CORRECTO, " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG  " +
+            "where CODE = 'T' and STATE = 'Fallido') as TRANMSACTION_FALLIDO, " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE = 'T' and STATE = 'Correcto') as TRANSACTION_CORRECTO, " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE = 'M') as MAESTRO_TOTAL, " +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE = 'T') as TRANSACTION_TOTAL," +
+            "(select Count(*) from SWLI.TRANSACTION_LOG " +
+            "where CODE IN ('M', 'T')) as TOTAL " +
+            "from SWLI.TRANSACTION_LOG\n" +
+            "where DATE_TRANSACTION >= to_date (:date || :month, 'YYYYMM') " +
+            "and DATE_TRANSACTION <= add_months(to_date (:date || :month, 'YYYYMM'), 1)", nativeQuery = true)
+    List<Object[]> getCantTransactionMonth(@Param("date") String date, @Param("month") String month);
 }

@@ -1,14 +1,21 @@
 package com.farmaciasperuanas.pmmli.monitor.service;
 
+import com.farmaciasperuanas.pmmli.monitor.dto.CantMaestroDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.DataMaestraDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.TransactionDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.TransanctionDetailDto;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionLogRepository;
+import oracle.sql.DATE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -85,5 +92,40 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             transanctionDetailDto.setResponse(String.valueOf(object[4]));
         }
         return transanctionDetailDto;
+    }
+
+    @Override
+    public CantMaestroDto getCantidadDatosMonth() {
+
+        List<Object[]> listObject = new ArrayList<>();
+        CantMaestroDto cantMaestroDto = new CantMaestroDto();
+
+        LocalDate localDate = LocalDate.now();
+
+        Integer month = localDate.getMonthValue();
+        Integer year = localDate.getYear();
+
+        listObject = transactionLogRepository.getCantTransactionMonth(String.valueOf(year), String.valueOf(month));
+
+
+        for(Object[] objects: listObject){
+            cantMaestroDto.setCantMaestroFallido(Integer.parseInt(String.valueOf(objects[0])));
+            cantMaestroDto.setCantMaestroCorrecto(Integer.parseInt(String.valueOf(objects[1])));
+            cantMaestroDto.setCantTransactionFallido(Integer.parseInt(String.valueOf(objects[2])));
+            cantMaestroDto.setCantTransactionCorrecto(Integer.parseInt(String.valueOf(objects[3])));
+            cantMaestroDto.setCantMaestros(Integer.parseInt(String.valueOf(objects[4])));
+            cantMaestroDto.setCantTransacciones(Integer.parseInt(String.valueOf(objects[5])));
+            cantMaestroDto.setTotal(Integer.parseInt(String.valueOf(objects[6])));
+        }
+        return cantMaestroDto;
+    }
+
+    private Date getCurrentDate() {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        LocalDate localDate = LocalDate.now();
+        localDate.getYear();
+        localDate.getMonthValue();
+
+        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
     }
 }
