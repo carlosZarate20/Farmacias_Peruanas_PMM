@@ -123,8 +123,6 @@ public class MonitorController {
         entity.setCronExpression(null);
         transactionTaskService.save(entity);
       }
-
-
     }catch (Exception e)
     {
       logger.error("Ocurrió un error al iniciar el job del proceso 1", e);
