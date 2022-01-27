@@ -28,7 +28,9 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             }
 
             cantTransaction = transactionLogRepository.getCanTransaction(codeTransaction);
-
+            if(cantTransaction == null){
+                cantTransaction = 0;
+            }
             cantTransaction += 1;
 
             SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

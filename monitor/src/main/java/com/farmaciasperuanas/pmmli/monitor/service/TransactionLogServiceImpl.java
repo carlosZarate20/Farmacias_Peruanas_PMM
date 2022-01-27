@@ -27,11 +27,15 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         {
             DataMaestraDto dataMaestraDto = new DataMaestraDto();
             dataMaestraDto.setNameTransaccion(String.valueOf(object[0]));
-            dataMaestraDto.setCantTransacciones(Integer.parseInt(String.valueOf(object[1])));
-            dataMaestraDto.setUltimaEjecucion(dt.format(object[2]));
+            dataMaestraDto.setTypeTransaction(String.valueOf(object[1]));
+            dataMaestraDto.setTaskState(String.valueOf(object[2]));
             dataMaestraDto.setCodeTransaction(String.valueOf(object[3]));
-            dataMaestraDto.setTypeTransaction(String.valueOf(object[4]));
-            dataMaestraDto.setTaskState(String.valueOf(object[5]));
+            dataMaestraDto.setCantTransacciones(Integer.parseInt(String.valueOf(object[4])));
+            if(object[5] != null){
+                dataMaestraDto.setUltimaEjecucion(dt.format(object[5]));
+            }else {
+                dataMaestraDto.setUltimaEjecucion(" ");
+            }
 
             dataMaestraDtoList.add(dataMaestraDto);
         }
