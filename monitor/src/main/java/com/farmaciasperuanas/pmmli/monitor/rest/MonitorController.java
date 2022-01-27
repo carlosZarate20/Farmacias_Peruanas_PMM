@@ -1,9 +1,6 @@
 package com.farmaciasperuanas.pmmli.monitor.rest;
 
-import com.farmaciasperuanas.pmmli.monitor.dto.DataMaestraDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.ResponseDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.TaskCronDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.TransactionDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.*;
 import com.farmaciasperuanas.pmmli.monitor.service.ProviderService;
 import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
@@ -70,6 +67,11 @@ public class MonitorController {
   @GetMapping("/listarTransactionDashboard")
   public List<TransactionDto> listarTransactionDashboard(){
       return transactionLogService.listarTransactionDashboard();
+  }
+
+  @GetMapping("/getDetailTransaction/{id}")
+  public TransanctionDetailDto getDetailTransaction(@PathVariable("id") Integer id){
+      return transactionLogService.getDetailTransaction(id);
   }
 
   @PostMapping(path="/initJobProcess")

@@ -2,6 +2,7 @@ package com.farmaciasperuanas.pmmli.monitor.service;
 
 import com.farmaciasperuanas.pmmli.monitor.dto.DataMaestraDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.TransactionDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.TransanctionDetailDto;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,5 +60,26 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             transactionDtoList.add(transactionDto);
         }
         return transactionDtoList;
+    }
+
+    @Override
+    public TransanctionDetailDto getDetailTransaction(Integer id) {
+
+        List<Object[]> listDetailTransaction = new ArrayList<>();
+        listDetailTransaction = transactionLogRepository.getTransactionDetail(id);
+
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
+
+        TransanctionDetailDto transanctionDetailDto = new TransanctionDetailDto();
+
+        for(Object[] object: listDetailTransaction){
+
+            transanctionDetailDto.setNameTransaction(String.valueOf(object[0]));
+            transanctionDetailDto.setState(String.valueOf(object[1]));
+            transanctionDetailDto.setDateTransaction(dt.format(object[2]));
+            transanctionDetailDto.setRequest(String.valueOf(object[3]));
+            transanctionDetailDto.setResponse(String.valueOf(object[4]));
+        }
+        return transanctionDetailDto;
     }
 }
