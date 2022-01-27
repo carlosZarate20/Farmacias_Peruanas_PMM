@@ -124,7 +124,7 @@ public class MonitorController {
         entity.setCronExpression(null);
         transactionTaskService.save(entity);
 
-        
+
       }
     }catch (Exception e)
     {
