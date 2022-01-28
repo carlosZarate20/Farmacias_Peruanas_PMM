@@ -3,11 +3,10 @@ package com.farmaciasperuanas.pmmli.monitor.rest;
 import com.farmaciasperuanas.pmmli.monitor.dto.*;
 import com.farmaciasperuanas.pmmli.monitor.entity.TransactionTask;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTaskRepository;
-import com.farmaciasperuanas.pmmli.monitor.service.ProviderService;
+import com.farmaciasperuanas.pmmli.monitor.service.EndpointService;
 import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
-import com.farmaciasperuanas.pmmli.monitor.task.MasterProccessTask1;
-import com.farmaciasperuanas.pmmli.monitor.task.MasterProccessTask2;
+import com.farmaciasperuanas.pmmli.monitor.task.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -45,16 +43,31 @@ public class MonitorController {
   private TransactionLogService transactionLogService;
 
   @Autowired
-  private ProviderService providerService;
+  private EndpointService providerService;
 
   @Autowired
   private TaskSchedulingService taskSchedulingService;
 
   @Autowired
-  private MasterProccessTask1 masterProccessTask1;
+  private MasterProccessProvider masterProccessProvider;
 
   @Autowired
-  private MasterProccessTask2 masterProccessTask2;
+  private MasterProccessMasterialProvider masterProccessMaterialProvider;
+
+  @Autowired
+  private MasterProccessBarcode masterProccessBarcode;
+
+  @Autowired
+  private MasterProccessMaterial masterProccessMaterial;
+
+  @Autowired
+  private MasterProccessMaterialLot masterProccessMaterialLot;
+
+  @Autowired
+  private MasterProccessStore masterProccessStore;
+
+  @Autowired
+  private MasterProccessVolumeticData masterProccessVolumeticData;
 
   @Autowired
   private TransactionTaskRepository transactionTaskService;
@@ -65,8 +78,8 @@ public class MonitorController {
   }
 
   @PostMapping("/enviar/{typeOp}")
-  public ResponseDto ejecutarProceso(@PathVariable("typeOp") String typeOp, HttpServletRequest httpSession){
-      return providerService.ejecutarProceso(typeOp, httpSession);
+  public ResponseDto ejecutarProceso(@PathVariable("typeOp") String typeOp){
+      return providerService.ejecutarProceso(typeOp);
   }
 
   @GetMapping("/listarTransactionDashboard")
@@ -95,25 +108,25 @@ public class MonitorController {
         transactionTaskService.save(entity);
         switch (dto.getId()) {
           case "MM":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessMaterial, cronExpression );
             break;
           case "MP":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask2, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessProvider, cronExpression );
             break;
           case "MMP":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessMaterialProvider, cronExpression );
             break;
           case "MML":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessMaterialLot, cronExpression );
             break;
           case "MVD":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessVolumeticData, cronExpression );
             break;
           case "MB":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessBarcode, cronExpression );
             break;
           case "MS":
-            taskSchedulingService.scheduleTask(jobId, masterProccessTask1, cronExpression );
+            taskSchedulingService.scheduleTask(jobId, masterProccessStore, cronExpression );
             break;
           default:
             break;
