@@ -134,10 +134,7 @@ public class MonitorController {
       } else {
         taskSchedulingService.removeScheduledTask(jobId);
         entity.setTaskState("I");
-        entity.setCronExpression(null);
         transactionTaskService.save(entity);
-
-
       }
     }catch (Exception e)
     {
