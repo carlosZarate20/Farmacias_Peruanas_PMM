@@ -54,6 +54,7 @@ public class StoreServiceImpl implements StoreService{
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
 
+        String status = "";
         try{
             storeDtoList = getListStore();
 
@@ -97,11 +98,13 @@ public class StoreServiceImpl implements StoreService{
                     for(StoreDto storeDto: storeDtoList){
                         storeRepository.updateStore(storeDto.getCodigo());
                     }
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -113,7 +116,7 @@ public class StoreServiceImpl implements StoreService{
 
                 transactionLogService.saveTransactionLog("Maestro Store", "M",
                         "MS", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

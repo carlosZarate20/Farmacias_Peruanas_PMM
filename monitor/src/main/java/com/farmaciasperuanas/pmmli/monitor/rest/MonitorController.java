@@ -83,7 +83,7 @@ public class MonitorController {
   }
 
   @GetMapping("/listarTransactionDashboard")
-  public List<TransactionDto> listarTransactionDashboard(){
+  public List<TransactionLogDto> listarTransactionDashboard(){
       return transactionLogService.listarTransactionDashboard();
   }
 
@@ -144,12 +144,27 @@ public class MonitorController {
   }
 
   @GetMapping("/getTransactionTask/{code}")
-  public TransactionTask listarTransactionDashboard(@PathVariable("code") String code){
+  public TransactionTask getTransactionTask(@PathVariable("code") String code){
     return transactionTaskService.getTransactionTaskByCodeWork(code);
   }
 
   @GetMapping("/getCantTransactionMonth")
   public CantMaestroDto getCantTransactionMonth(){
     return transactionLogService.getCantidadDatosMonth();
+  }
+
+  @GetMapping("/getErrorType")
+  public List<ErrorTypeDto> getListError(){
+    return transactionLogService.getListError();
+  }
+
+  @GetMapping("/getNameTransaction")
+  public List<TransactionDto> getNameTransaction(){
+    return transactionLogService.getNameTransaction();
+  }
+
+  @PostMapping("/listarTransactionLog")
+  public DataTableDto<TransactionLogDto> listarTransactionLog(@RequestBody TransactionLogRequestDto transactionLogRequestDto){
+    return transactionLogService.listarTransactionLog(transactionLogRequestDto);
   }
 }

@@ -54,6 +54,7 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
 
+        String status = "";
         try{
             volumetricDataDtoList = getListVolumetricData();
             if(volumetricDataDtoList.size() != 0){
@@ -96,12 +97,13 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                     for(VolumetricDataDto volumetricDataDto: volumetricDataDtoList){
                         volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial());
                     }
-
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -113,7 +115,7 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
 
                 transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
                         "MVD", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

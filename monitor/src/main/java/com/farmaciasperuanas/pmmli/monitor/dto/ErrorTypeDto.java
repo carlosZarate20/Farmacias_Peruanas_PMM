@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionDto {
-    private String type;
+public class ErrorTypeDto {
+    private String typeError;
     private String description;
 }

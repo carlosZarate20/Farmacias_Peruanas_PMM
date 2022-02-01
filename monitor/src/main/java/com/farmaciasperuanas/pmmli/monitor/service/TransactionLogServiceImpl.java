@@ -1,20 +1,19 @@
 package com.farmaciasperuanas.pmmli.monitor.service;
 
-import com.farmaciasperuanas.pmmli.monitor.dto.CantMaestroDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.DataMaestraDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.TransactionDto;
-import com.farmaciasperuanas.pmmli.monitor.dto.TransanctionDetailDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.*;
+import com.farmaciasperuanas.pmmli.monitor.entity.ErrorType;
+import com.farmaciasperuanas.pmmli.monitor.entity.TransactionLog;
+import com.farmaciasperuanas.pmmli.monitor.entity.TransactionType;
+import com.farmaciasperuanas.pmmli.monitor.repository.ErrorTypeRepository;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionLogRepository;
-import oracle.sql.DATE;
+import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +22,12 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 
     @Autowired
     private TransactionLogRepository transactionLogRepository;
+
+    @Autowired
+    private ErrorTypeRepository errorTypeRepository;
+
+    @Autowired
+    private TransactionTypeRepository transactionTypeRepository;
 
     @Override
     public List<DataMaestraDto> getDatosMaestros() {
@@ -50,17 +55,17 @@ public class TransactionLogServiceImpl implements TransactionLogService{
     }
 
     @Override
-    public List<TransactionDto> listarTransactionDashboard() {
+    public List<TransactionLogDto> listarTransactionDashboard() {
 
         List<Object[]> listTransaction = new ArrayList<>();
-        List<TransactionDto> transactionDtoList = new ArrayList<>();
+        List<TransactionLogDto> transactionDtoList = new ArrayList<>();
 
         listTransaction = transactionLogRepository.getDahsboardTransaction();
 
         SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
 
         for(Object[] object: listTransaction){
-            TransactionDto transactionDto = new TransactionDto();
+            TransactionLogDto transactionDto = new TransactionLogDto();
 
             transactionDto.setIdTran(Integer.parseInt(String.valueOf(object[0])));
             transactionDto.setIdentTransaction(String.format("%6s", String.valueOf(object[0])).replace(' ','0'));
@@ -120,6 +125,84 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         return cantMaestroDto;
     }
 
+    @Override
+    public List<TransactionDto> getNameTransaction() {
+        List<TransactionDto> transactionDtoList = new ArrayList<>();
+
+        List<TransactionType> transactionTypeList = transactionTypeRepository.getTransactionType();
+
+        for(TransactionType transactionType : transactionTypeList){
+            TransactionDto transactionDto = new TransactionDto();
+            transactionDto.setType(transactionType.getTransactionType());
+            transactionDto.setDescription(transactionType.getNameTransaction());
+
+            transactionDtoList.add(transactionDto);
+        }
+        return transactionDtoList;
+    }
+
+    @Override
+    public List<ErrorTypeDto> getListError() {
+        List<ErrorTypeDto> errorTypeDtoList = new ArrayList<>();
+
+        List<ErrorType> errorTypeList = errorTypeRepository.getErrorType();
+
+        for(ErrorType errorType: errorTypeList){
+            ErrorTypeDto errorTypeDto = new ErrorTypeDto();
+            errorTypeDto.setTypeError(errorType.getTypeError());
+            errorTypeDto.setDescription(errorType.getNameDescription());
+
+            errorTypeDtoList.add(errorTypeDto);
+        }
+        return errorTypeDtoList;
+    }
+
+    @Override
+    public DataTableDto<TransactionLogDto> listarTransactionLog(TransactionLogRequestDto transactionLogRequestDto) {
+
+        DataTableDto<TransactionLogDto> response = new DataTableDto<>();
+        Integer validateDate = -1;
+        Integer validateAccount = -1;
+        Integer validateState = -1;
+
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
+
+        Integer init = transactionLogRequestDto.getRows() * transactionLogRequestDto.getPage();
+
+        OffsetLimitRequest offsetLimitRequest = new OffsetLimitRequest(init, transactionLogRequestDto.getRows());
+
+        List<TransactionLogDto> transactionLogDtoList = new ArrayList<>();
+
+        List<TransactionLog> transactionLogList = transactionLogRepository.getTransactionLogFilter(dt.format(transactionLogRequestDto.getStartDate()),
+                dt.format(transactionLogRequestDto.getEndDate()), transactionLogRequestDto.getState(),
+                transactionLogRequestDto.getTypeTransaction(), -1, -1, 1, offsetLimitRequest);
+
+        Integer count = transactionLogRepository.getTransactionLogFilterCount("27/01/2022",
+                "29/01/2022", transactionLogRequestDto.getState(), "MP", -1, -1, 1);
+
+        Integer cantPages = count / transactionLogList.size();
+
+        String idenTransaction = "";
+        for(TransactionLog transactionLog: transactionLogList){
+            TransactionLogDto transactionLogDto = new TransactionLogDto();
+            transactionLogDto.setIdTran(transactionLog.getIdTransacctionLog());
+            idenTransaction = String.valueOf(transactionLog.getIdTransacctionLog());
+            transactionLogDto.setIdentTransaction(String.format("%6s", String.valueOf(transactionLog.getIdTransacctionLog()).replace(' ','0')));
+            transactionLogDto.setNameTransaction(transactionLog.getNameTransaction());
+            transactionLogDto.setEstado(transactionLog.getState());
+            transactionLogDto.setFechaTransaccion(dt.format(transactionLog.getDateTransaction()));
+            transactionLogDtoList.add(transactionLogDto);
+        }
+
+        response.setLength(cantPages);
+        response.setData(transactionLogDtoList);
+
+//        List<Object[]> transactionLogFilterDtoList = transactionLogRepository.getTransactionLogFilter("27/01/2022",
+//                "29/01/2022", "F", "MP", -1, -1, 1, offsetLimitRequest);
+
+        return response;
+    }
+
     private Date getCurrentDate() {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         LocalDate localDate = LocalDate.now();
@@ -128,4 +211,6 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 
         return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
     }
+
+
 }

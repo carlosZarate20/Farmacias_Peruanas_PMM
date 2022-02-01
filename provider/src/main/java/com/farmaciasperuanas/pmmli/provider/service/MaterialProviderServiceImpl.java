@@ -53,6 +53,8 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
 
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
+
+        String status = "";
         try{
             materialProviderDtoList = getListMaterialProvider();
 
@@ -101,11 +103,13 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                     for(MaterialProviderDto materialProviderDto: materialProviderDtoList){
                         materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka());
                     }
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -117,7 +121,7 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
 
                 transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
                         "MMP", "Data Maestra",
-                        true, requestBody, responseBody);
+                        status, requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

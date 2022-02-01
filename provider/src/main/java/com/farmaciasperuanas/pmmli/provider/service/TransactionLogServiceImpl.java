@@ -15,17 +15,11 @@ public class TransactionLogServiceImpl implements TransactionLogService{
     private TransactionLogRepository transactionLogRepository;
 
     @Override
-    public void saveTransactionLog(String nameTransaction, String codeOp, String codeTransaction, String typeTransaction, boolean status, String requestBody, String responseBody) {
+    public void saveTransactionLog(String nameTransaction, String codeOp, String codeTransaction, String typeTransaction, String status, String requestBody, String responseBody) {
         Integer cantTransaction = 0;
-        String state = "";
         String dateTransaction ="";
 
         try{
-            if(status){
-                state = "Correcto";
-            } else {
-                state = "Fallido";
-            }
 
             cantTransaction = transactionLogRepository.getCanTransaction(codeTransaction);
             if(cantTransaction == null){
@@ -39,7 +33,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             dateTransaction = dt.format(date);
 
             transactionLogRepository.saveTransactionLog(nameTransaction, codeOp, codeTransaction,
-                    typeTransaction, cantTransaction, dateTransaction, state,
+                    typeTransaction, cantTransaction, dateTransaction, status,
                     requestBody, responseBody);
         } catch (Exception e){
             e.printStackTrace();

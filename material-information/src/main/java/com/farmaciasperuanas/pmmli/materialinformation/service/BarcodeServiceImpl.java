@@ -53,6 +53,7 @@ public class BarcodeServiceImpl implements BarcodeService{
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
 
+        String status = "";
         try {
             listBarcode = getListBarcode();
             if(listBarcode.size() != 0){
@@ -102,12 +103,13 @@ public class BarcodeServiceImpl implements BarcodeService{
                     for(BarcodeDto barcodeDto: listBarcode){
                         barcodeRepository.updateBarcode(barcodeDto.getMaterial());
                     }
-
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
+                    status =  "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -119,7 +121,7 @@ public class BarcodeServiceImpl implements BarcodeService{
 
                 transactionLogService.saveTransactionLog("Maestro Barcode", "M",
                         "MB", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

@@ -25,12 +25,6 @@ public class Material implements Serializable {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "ARTICLE_GROUP")
-    private String articleGroup;
-
-    @Column(name = "ARTICLE_GROUP_DESCRIPTION")
-    private String articleGroupDescription;
-
     @Column(name = "UNIT_PRICE")
     private Double unitPrice;
 
@@ -54,9 +48,6 @@ public class Material implements Serializable {
 
     @Column(name = "INACTIVE")
     private Integer inactive;
-
-    @Column(name = "UMB")
-    private String umb;
 
     @Column(name = "DEMON")
     private String demon;

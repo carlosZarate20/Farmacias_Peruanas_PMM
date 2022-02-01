@@ -53,6 +53,8 @@ public class MaterialServiceImpl implements MaterialService{
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
 
+        String status = "";
+
         try{
             materialDtoList = getListMaterial();
             if(materialDtoList.size() != 0){
@@ -97,11 +99,13 @@ public class MaterialServiceImpl implements MaterialService{
                     for(MaterialDto materialDto: materialDtoList){
                         materialRepository.updateMaterial(materialDto.getInka());
                     }
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -113,7 +117,7 @@ public class MaterialServiceImpl implements MaterialService{
 
                 transactionLogService.saveTransactionLog("Maestro Material", "M",
                         "MM", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
@@ -136,9 +140,7 @@ public class MaterialServiceImpl implements MaterialService{
             MaterialDto materialDto = new MaterialDto();
             materialDto.setControl(material.getControl());
             materialDto.setDescripcion(material.getDescription());
-            materialDto.setDescripcionGrupoArticulo(material.getArticleGroupDescription());
             materialDto.setFamilia(material.getFamily());
-            materialDto.setGrupoArticulo(material.getArticleGroup());
             materialDto.setInka(material.getInka());
             materialDto.setMifa(material.getMifa());
             materialDto.setPrecioUnitario(material.getUnitPrice());

@@ -56,6 +56,7 @@ public class MaterialLotServiceImpl implements MaterialLotService{
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
 
+        String status = "";
         try{
             materialLotDtoList = getListMaterialLot();
 
@@ -100,13 +101,14 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                     for(MaterialLotDto materialLotDto: materialLotDtoList){
                         materialLotRepository.updateMaterialLot(materialLotDto.getMaterial());
                     }
-
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
 
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -117,7 +119,7 @@ public class MaterialLotServiceImpl implements MaterialLotService{
 
                 transactionLogService.saveTransactionLog("Maestro Material Lot", "M",
                         "MML", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

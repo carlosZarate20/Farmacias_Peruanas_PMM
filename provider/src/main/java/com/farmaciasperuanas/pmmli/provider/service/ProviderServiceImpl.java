@@ -51,6 +51,7 @@ public class ProviderServiceImpl implements ProviderService {
         String requestBody = "";
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
+        String status = "";
         try {
             //Traer datos para insertar a LI
             providerDtoList = getListProvider();
@@ -103,11 +104,13 @@ public class ProviderServiceImpl implements ProviderService {
                         providerRepository.updateProvider(providerDto.getCodigoSap());
                     }
 
+                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage("Envio Correcto");
                 } else {
+                    status = "F";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
@@ -119,7 +122,7 @@ public class ProviderServiceImpl implements ProviderService {
 
                 transactionLogService.saveTransactionLog("Maestro Provider", "M",
                         "MP", "Data Maestra",
-                        responseDto.isStatus(), requestBody, responseBody);
+                        status, requestBody, responseBody);
 
             } else{
                 responseDto.setCode(HttpStatus.OK.value());

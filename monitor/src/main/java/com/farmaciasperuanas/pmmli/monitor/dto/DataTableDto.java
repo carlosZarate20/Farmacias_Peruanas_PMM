@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransactionDto {
-    private String type;
-    private String description;
+public class DataTableDto <T>{
+    private Integer length;
+    private List<T> data;
 }
