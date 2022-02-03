@@ -1,11 +1,12 @@
 package com.farmaciasperuanas.pmmli.localstore.service;
 
-import com.farmaciasperuanas.pmmli.localstore.dto.LoginRequest;
-import com.farmaciasperuanas.pmmli.localstore.dto.ResponseApi;
-import com.farmaciasperuanas.pmmli.localstore.dto.ResponseDto;
-import com.farmaciasperuanas.pmmli.localstore.dto.StoreDto;
+import com.farmaciasperuanas.pmmli.localstore.dto.*;
 import com.farmaciasperuanas.pmmli.localstore.entity.Store;
+import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLog;
+import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLogError;
 import com.farmaciasperuanas.pmmli.localstore.repository.StoreRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,7 +23,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StoreServiceImpl implements StoreService{
@@ -39,6 +42,9 @@ public class StoreServiceImpl implements StoreService{
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto enviarTienda() {
@@ -75,8 +81,14 @@ public class StoreServiceImpl implements StoreService{
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
-
-                String input = GSON.toJson(storeDtoList);
+                ObjectMapper mapper = new ObjectMapper();
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(storeDtoList);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+//                String input = GSON.toJson(storeDtoList);
 
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
@@ -95,9 +107,9 @@ public class StoreServiceImpl implements StoreService{
                 httpUrlConnection.disconnect();
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
-                    for(StoreDto storeDto: storeDtoList){
-                        storeRepository.updateStore(storeDto.getCodigo());
-                    }
+//                    for(StoreDto storeDto: storeDtoList){
+//                        storeRepository.updateStore(storeDto.getCodigo());
+//                    }
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
@@ -111,12 +123,32 @@ public class StoreServiceImpl implements StoreService{
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-                responseBody = String.valueOf(responseApi);
-                requestBody = GSON.toJson(storeDtoList);
+//                responseBody = String.valueOf(responseApi);
+//                String responseBody = "";
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
-                transactionLogService.saveTransactionLog("Maestro Store", "M",
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Store", "M",
                         "MS", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for(StoreDto storeDto : storeDtoList){
+                    boolean valid = positionsError.contains(storeDtoList.indexOf(storeDto));
+                    if(!valid) {
+                        storeRepository.updateStore(storeDto.getCodigo());
+                    }
+                }
+
+
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

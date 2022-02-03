@@ -16,6 +16,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionLogServiceImpl implements TransactionLogService{
@@ -67,7 +68,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         for(Object[] object: listTransaction){
             TransactionLogDto transactionDto = new TransactionLogDto();
 
-            transactionDto.setIdTran(Integer.parseInt(String.valueOf(object[0])));
+            transactionDto.setIdTran(Long.valueOf(String.valueOf(object[0])));
             transactionDto.setIdentTransaction(String.format("%6s", String.valueOf(object[0])).replace(' ','0'));
             transactionDto.setNameTransaction(String.valueOf(object[1]));
             transactionDto.setEstado(String.valueOf(object[2]));
@@ -79,22 +80,32 @@ public class TransactionLogServiceImpl implements TransactionLogService{
     }
 
     @Override
-    public TransanctionDetailDto getDetailTransaction(Integer id) {
+    public TransanctionDetailDto getDetailTransaction(Long id) {
 
         List<Object[]> listDetailTransaction = new ArrayList<>();
-        listDetailTransaction = transactionLogRepository.getTransactionDetail(id);
+//        listDetailTransaction = transactionLogRepository.getTransactionDetail(id);
 
         SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
 
         TransanctionDetailDto transanctionDetailDto = new TransanctionDetailDto();
-
-        for(Object[] object: listDetailTransaction){
-
-            transanctionDetailDto.setNameTransaction(String.valueOf(object[0]));
-            transanctionDetailDto.setState(String.valueOf(object[1]));
-            transanctionDetailDto.setDateTransaction(dt.format(object[2]));
-            transanctionDetailDto.setRequest(String.valueOf(object[3]));
-            transanctionDetailDto.setResponse(String.valueOf(object[4]));
+        Optional<TransactionLog> tl =transactionLogRepository.findById(id);
+//        for(Object[] object: listDetailTransaction){
+//
+//            transanctionDetailDto.setNameTransaction(String.valueOf(object[0]));
+//            transanctionDetailDto.setState(String.valueOf(object[1]));
+//            transanctionDetailDto.setDateTransaction(dt.format(object[2]));
+//            transanctionDetailDto.setRequest(String.valueOf(object[3]));
+//            transanctionDetailDto.setResponse(String.valueOf(object[4]));
+//
+//        }
+        if(tl.isPresent()){
+            TransactionLog tran = tl.get();
+            transanctionDetailDto.setRequest(tran.getJsonRequest());
+            transanctionDetailDto.setResponse(tran.getJsonResponse());
+            transanctionDetailDto.setNameTransaction(tran.getNameTransaction());
+            transanctionDetailDto.setState(tran.getState());
+            transanctionDetailDto.setDateTransaction(dt.format(tran.getDateTransaction()));
+            transanctionDetailDto.setTransactionLogErrors(tran.getTransactionLogErrors());
         }
         return transanctionDetailDto;
     }
@@ -188,7 +199,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         Integer count = transactionLogRepository.getTransactionLogFilterCount("27/01/2022",
                 "03/02/2022", transactionLogRequestDto.getState(), "MP", validateDate, validateTypeTransaction, validateState);
 
-        Integer cantPages = count / transactionLogList.size();
+        Integer cantPages = transactionLogList.size() == 0 ? 0 : count / transactionLogList.size();
 
         String idenTransaction = "";
         for(TransactionLog transactionLog: transactionLogList){

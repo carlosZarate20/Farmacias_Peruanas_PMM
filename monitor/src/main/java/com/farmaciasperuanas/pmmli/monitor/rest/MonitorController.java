@@ -88,7 +88,7 @@ public class MonitorController {
   }
 
   @GetMapping("/getDetailTransaction/{id}")
-  public TransanctionDetailDto getDetailTransaction(@PathVariable("id") Integer id){
+  public TransanctionDetailDto getDetailTransaction(@PathVariable("id") Long id){
       return transactionLogService.getDetailTransaction(id);
   }
 

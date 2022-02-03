@@ -9,7 +9,7 @@ public interface TransactionLogService {
 
     List<TransactionLogDto> listarTransactionDashboard();
 
-    TransanctionDetailDto getDetailTransaction(Integer id);
+    TransanctionDetailDto getDetailTransaction(Long id);
 
     CantMaestroDto getCantidadDatosMonth();
 

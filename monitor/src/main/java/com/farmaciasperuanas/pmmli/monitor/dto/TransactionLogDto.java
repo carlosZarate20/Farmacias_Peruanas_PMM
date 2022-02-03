@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TransactionLogDto {
-    private Integer idTran;
+    private Long idTran;
     private String identTransaction;
     private String nameTransaction;
     private String estado;
