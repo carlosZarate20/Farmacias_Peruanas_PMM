@@ -162,8 +162,16 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 
         DataTableDto<TransactionLogDto> response = new DataTableDto<>();
         Integer validateDate = -1;
-        Integer validateAccount = -1;
+        Integer validateTypeTransaction= -1;
         Integer validateState = -1;
+
+        if(!transactionLogRequestDto.getState().equals("") && transactionLogRequestDto.getState() != null){
+            validateState = 1;
+        }
+
+        if(!transactionLogRequestDto.getTypeTransaction().equals("")  && transactionLogRequestDto.getTypeTransaction() != null){
+            validateTypeTransaction = 1;
+        }
 
         SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
 
@@ -175,10 +183,10 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 
         List<TransactionLog> transactionLogList = transactionLogRepository.getTransactionLogFilter(dt.format(transactionLogRequestDto.getStartDate()),
                 dt.format(transactionLogRequestDto.getEndDate()), transactionLogRequestDto.getState(),
-                transactionLogRequestDto.getTypeTransaction(), -1, -1, 1, offsetLimitRequest);
+                transactionLogRequestDto.getTypeTransaction(), validateDate, validateTypeTransaction, validateState, offsetLimitRequest);
 
         Integer count = transactionLogRepository.getTransactionLogFilterCount("27/01/2022",
-                "29/01/2022", transactionLogRequestDto.getState(), "MP", -1, -1, 1);
+                "03/02/2022", transactionLogRequestDto.getState(), "MP", validateDate, validateTypeTransaction, validateState);
 
         Integer cantPages = count / transactionLogList.size();
 
