@@ -12,6 +12,13 @@ spring:
     username: SWLI
     password: 22SD#nITgr#p22mM
     driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+#      connection-timeout: 20000
+      minimum-Idle: 2
+      maximun-pool-size: 10
+      validation-timeout: 1500000
+      max-lifetime: 1500000
+
     jpa:
       show-sql: true
       hibernate:
