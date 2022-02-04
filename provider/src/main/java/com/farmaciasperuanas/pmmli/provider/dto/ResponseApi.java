@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,5 +14,5 @@ import java.io.Serializable;
 @Builder
 public class ResponseApi{
     private String code;
-    private String[] errors;
+    private List<ResponseApiErrorItem> errors;
 }

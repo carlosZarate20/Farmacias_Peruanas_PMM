@@ -49,8 +49,8 @@ public class Material implements Serializable {
     @Column(name = "INACTIVE")
     private Integer inactive;
 
-    @Column(name = "DEMON")
-    private String demon;
+    @Column(name = "DENOM")
+    private String denom;
 
     @Column(name = "UPDATED")
     private Long updated;

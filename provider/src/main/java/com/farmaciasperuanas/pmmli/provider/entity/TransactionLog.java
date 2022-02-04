@@ -4,15 +4,16 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
-@Table(name = "TRANSACCION_LOG", schema = "SWLI")
+@Table(name = "TRANSACTION_LOG", schema = "SWLI")
 public class TransactionLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_TRANSACTION_LOG")
-    private Integer idTransacctionLog;
+    private Long idTransacctionLog;
 
     @Column(name = "NAME_TRANSACTION")
     private String nameTransaction;
@@ -35,9 +36,16 @@ public class TransactionLog {
     @Column(name = "STATE")
     private String state;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "JSON_REQUEST")
     private String jsonRequest;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "JSON_RESPONSE")
     private String jsonResponse;
+
+    @OneToMany(mappedBy = "transactionLog")
+    private List<TransactionLogError> transactionLogErrors;
 }

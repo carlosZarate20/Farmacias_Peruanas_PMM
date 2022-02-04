@@ -1,11 +1,11 @@
 package com.farmaciasperuanas.pmmli.materialinformation.service;
 
-import com.farmaciasperuanas.pmmli.materialinformation.dto.LoginRequest;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.ResponseApi;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.ResponseDto;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.VolumetricDataDto;
+import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
+import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.VolumetricData;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.VolumetricDataRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +22,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VolumetricDataServiceImpl implements VolumetricDataService {
@@ -39,6 +40,9 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
+
     @Override
     public ResponseDto enviarDataVolumetrica() {
 
@@ -55,9 +59,9 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
-        try{
+        try {
             volumetricDataDtoList = getListVolumetricData();
-            if(volumetricDataDtoList.size() != 0){
+            if (volumetricDataDtoList.size() != 0) {
                 loginRequest.setUsername("serviciosweb");
                 loginRequest.setPassword("Brainbox2021");
                 authTokenHeader = loginService.iniciarSession(loginRequest);
@@ -74,9 +78,14 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
-
-                String input = GSON.toJson(volumetricDataDtoList);
-
+                ObjectMapper mapper = new ObjectMapper();
+//                String input = GSON.toJson(volumetricDataDtoList);
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(volumetricDataDtoList);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
                 os.flush();
@@ -85,7 +94,7 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 String outPut;
                 StringBuilder sb = new StringBuilder();
 
-                while((outPut = br.readLine()) != null) {
+                while ((outPut = br.readLine()) != null) {
                     LOGGER.debug(outPut);
                     sb.append(outPut);
                 }
@@ -93,30 +102,47 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
-                if(responseApi.getCode().equalsIgnoreCase("ok")){
-                    for(VolumetricDataDto volumetricDataDto: volumetricDataDtoList){
-                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial());
-                    }
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+//                    for(VolumetricDataDto volumetricDataDto: volumetricDataDtoList){
+//                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial());
+//                    }
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
-                    status = "F";
+                    status = volumetricDataDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-                responseBody = String.valueOf(responseApi);
-                requestBody = GSON.toJson(volumetricDataDtoList);
-
-                transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
+//                responseBody = String.valueOf(responseApi);
+//                requestBody = GSON.toJson(volumetricDataDtoList);
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
                         "MVD", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
 
+                for (ResponseApiErrorItem res : responseApi.getErrors()) {
+                    transactionLogErrorService.saveTransactionLogError(tl, res.getPk(), res.getMessage());
+                }
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for (VolumetricDataDto volumetricDataDto : volumetricDataDtoList) {
+                    boolean valid = positionsError.contains(volumetricDataDtoList.indexOf(volumetricDataDto));
+                    if (!valid) {
+                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial(), volumetricDataDto.getUma());
+                    }
+                }
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
@@ -124,18 +150,18 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 responseDto.setMessage("No existen registros en la tabla SWLI.VOLUMETRIC_DATA");
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return responseDto;
     }
 
-    private List<VolumetricDataDto> getListVolumetricData(){
+    private List<VolumetricDataDto> getListVolumetricData() {
         List<VolumetricDataDto> volumetricDataDtoList = new ArrayList<>();
         List<VolumetricData> volumetricDataList = new ArrayList<>();
         volumetricDataList = volumetricDataRepository.getVolumetricDataList();
 
-        for(VolumetricData volumetricData : volumetricDataList) {
+        for (VolumetricData volumetricData : volumetricDataList) {
             VolumetricDataDto volumetricDataDto = new VolumetricDataDto();
 
             volumetricDataDto.setAltura(volumetricData.getHeight());

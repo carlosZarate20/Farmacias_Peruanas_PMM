@@ -1,10 +1,9 @@
-package com.farmaciasperuanas.pmmli.localstore.entity;
+package com.farmaciasperuanas.pmmli.provider.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Data
 @Entity

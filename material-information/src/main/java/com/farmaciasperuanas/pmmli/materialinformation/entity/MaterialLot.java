@@ -8,14 +8,14 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "MATERIAL_LOT", schema = "SWLI.")
+@Table(name = "MATERIAL_LOT", schema = "SWLI")
 public class MaterialLot implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_MATERIAL_LOT")
-    private Integer idMaterialLot;
+    private Long idMaterialLot;
 
     @Column(name = "MATERIAL_CODE")
     private String materialCode;

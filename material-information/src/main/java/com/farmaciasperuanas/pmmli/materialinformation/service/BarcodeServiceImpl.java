@@ -2,7 +2,10 @@ package com.farmaciasperuanas.pmmli.materialinformation.service;
 
 import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.Barcode;
+import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.BarcodeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,6 +22,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BarcodeServiceImpl implements BarcodeService{
@@ -34,6 +38,9 @@ public class BarcodeServiceImpl implements BarcodeService{
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto enviarCodigoBarra() {
@@ -75,7 +82,15 @@ public class BarcodeServiceImpl implements BarcodeService{
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
 
-                String input = GSON.toJson(listBarcode);
+                ObjectMapper mapper = new ObjectMapper();
+//                String input = GSON.toJson(listBarcode);
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(listBarcode);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+
 
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
@@ -100,28 +115,47 @@ public class BarcodeServiceImpl implements BarcodeService{
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
-                    for(BarcodeDto barcodeDto: listBarcode){
-                        barcodeRepository.updateBarcode(barcodeDto.getMaterial());
-                    }
+//                    for(BarcodeDto barcodeDto: listBarcode){
+//                        barcodeRepository.updateBarcode(barcodeDto.getMaterial());
+//                    }
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
-                    status =  "F";
+                    status =  listBarcode.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Ocurrio error");
                 }
 
-                responseBody = String.valueOf(responseApi);
-                requestBody = GSON.toJson(listBarcode);
-
-                transactionLogService.saveTransactionLog("Maestro Barcode", "M",
+//                responseBody = String.valueOf(responseApi);
+//                requestBody = GSON.toJson(listBarcode);
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Barcode", "M",
                         "MB", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
+
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for (BarcodeDto barcodeDto : listBarcode) {
+                    boolean valid = positionsError.contains(listBarcode.indexOf(barcodeDto));
+                    if(!valid) {
+                        barcodeRepository.updateBarcode(barcodeDto.getMaterial(),barcodeDto.getUm());
+                    }
+                }
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

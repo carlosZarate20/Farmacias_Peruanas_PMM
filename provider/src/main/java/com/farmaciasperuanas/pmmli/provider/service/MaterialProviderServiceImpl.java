@@ -1,11 +1,11 @@
 package com.farmaciasperuanas.pmmli.provider.service;
 
-import com.farmaciasperuanas.pmmli.provider.dto.LoginRequest;
-import com.farmaciasperuanas.pmmli.provider.dto.MaterialProviderDto;
-import com.farmaciasperuanas.pmmli.provider.dto.ResponseApi;
-import com.farmaciasperuanas.pmmli.provider.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.provider.dto.*;
 import com.farmaciasperuanas.pmmli.provider.entity.MaterialProvider;
+import com.farmaciasperuanas.pmmli.provider.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.provider.repository.MaterialProviderRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +23,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialProviderServiceImpl implements MaterialProviderService{
@@ -39,6 +40,9 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto enviarMaterialProvider() {
@@ -75,9 +79,14 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
-
-                String input = GSON.toJson(materialProviderDtoList);
-
+                ObjectMapper mapper = new ObjectMapper();
+//                String input = GSON.toJson(materialProviderDtoList);
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(materialProviderDtoList);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
                 os.flush();
@@ -100,28 +109,42 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 httpUrlConnection.disconnect();
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
-                    for(MaterialProviderDto materialProviderDto: materialProviderDtoList){
-                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka());
-                    }
+//                    for(MaterialProviderDto materialProviderDto: materialProviderDtoList){
+//                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka());
+//                    }
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
-                    status = "F";
+                    status = materialProviderDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-                responseBody = String.valueOf(responseApi);
-                requestBody = GSON.toJson(materialProviderDtoList);
-
-                transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
+//                responseBody = String.valueOf(responseApi);
+//                requestBody = GSON.toJson(materialProviderDtoList);
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
                         "MMP", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for(MaterialProviderDto materialProviderDto : materialProviderDtoList){
+                    boolean valid = positionsError.contains(materialProviderDtoList.indexOf(materialProviderDto));
+                    if(!valid) {
+                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka(),materialProviderDto.getCodigoProveedor());
+                    }
+                }
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

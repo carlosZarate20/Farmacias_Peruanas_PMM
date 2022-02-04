@@ -1,11 +1,11 @@
 package com.farmaciasperuanas.pmmli.materialinformation.service;
 
-import com.farmaciasperuanas.pmmli.materialinformation.dto.LoginRequest;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.MaterialDto;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.ResponseApi;
-import com.farmaciasperuanas.pmmli.materialinformation.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.Material;
+import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.MaterialRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +22,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialServiceImpl implements MaterialService{
@@ -37,6 +38,9 @@ public class MaterialServiceImpl implements MaterialService{
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto enviarMaterial() {
@@ -75,8 +79,14 @@ public class MaterialServiceImpl implements MaterialService{
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
-
-                String input = GSON.toJson(materialDtoList);
+                ObjectMapper mapper = new ObjectMapper();
+//                String input = GSON.toJson(materialDtoList);
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(materialDtoList);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
@@ -96,29 +106,45 @@ public class MaterialServiceImpl implements MaterialService{
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
-                    for(MaterialDto materialDto: materialDtoList){
-                        materialRepository.updateMaterial(materialDto.getInka());
-                    }
+//                    for(MaterialDto materialDto: materialDtoList){
+//                        materialRepository.updateMaterial(materialDto.getInka());
+//                    }
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Registro Correcto");
                 } else {
-                    status = "F";
+                    status = materialDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-                responseBody = String.valueOf(responseDto);
-                requestBody = GSON.toJson(materialDtoList);
-
-                transactionLogService.saveTransactionLog("Maestro Material", "M",
+//                responseBody = String.valueOf(responseDto);
+//                requestBody = GSON.toJson(materialDtoList);
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material", "M",
                         "MM", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for (MaterialDto materialDto : materialDtoList) {
+                    boolean valid = positionsError.contains(materialDtoList.indexOf(materialDto));
+                    if(!valid) {
+                        materialRepository.updateMaterial(materialDto.getInka());
+                    }
 
+                }
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

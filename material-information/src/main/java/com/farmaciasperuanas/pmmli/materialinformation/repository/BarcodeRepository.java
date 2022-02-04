@@ -20,6 +20,6 @@ public interface BarcodeRepository extends JpaRepository<Barcode, Long>, JpaSpec
     @Transactional
     @Query(value = "UPDATE SWLI.BARCODE " +
             "SET FLAGLI = 1 " +
-            "WHERE MATERIAL_CODE = :code", nativeQuery = true)
-    void updateBarcode(@Param("code") String code);
+            "WHERE MATERIAL_CODE = :code and UM = :um", nativeQuery = true)
+    void updateBarcode(@Param("code") String code,@Param("um") String um);
 }

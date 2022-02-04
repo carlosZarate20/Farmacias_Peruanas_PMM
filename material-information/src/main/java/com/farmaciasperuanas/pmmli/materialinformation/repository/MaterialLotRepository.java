@@ -20,6 +20,6 @@ public interface MaterialLotRepository extends JpaRepository<MaterialLot, Long>,
     @Transactional
     @Query(value = "UPDATE SWLI.MATERIAL_LOT " +
             "SET FLAGLI = 1 " +
-            "WHERE MATERIAL_CODE = :code", nativeQuery = true)
-    void updateMaterialLot(@Param("code") String code);
+            "WHERE MATERIAL_CODE = :code and LOTE = :lot ", nativeQuery = true)
+    void updateMaterialLot(@Param("code") String code,@Param("lot") String lot);
 }

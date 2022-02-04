@@ -1,11 +1,11 @@
 package com.farmaciasperuanas.pmmli.provider.service;
 
-import com.farmaciasperuanas.pmmli.provider.dto.LoginRequest;
-import com.farmaciasperuanas.pmmli.provider.dto.ProviderDto;
-import com.farmaciasperuanas.pmmli.provider.dto.ResponseApi;
-import com.farmaciasperuanas.pmmli.provider.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.provider.dto.*;
 import com.farmaciasperuanas.pmmli.provider.entity.Provider;
+import com.farmaciasperuanas.pmmli.provider.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.provider.repository.ProviderRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -38,6 +39,9 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto registrarProveedorLi() {
@@ -73,8 +77,14 @@ public class ProviderServiceImpl implements ProviderService {
                 httpUrlConnection.setRequestProperty("Accept", "application/json");
                 httpUrlConnection.setRequestProperty("Authorization", authTokenHeader);
                 httpUrlConnection.setRequestMethod("POST");
-
-                String input = GSON.toJson(providerDtoList);
+                ObjectMapper mapper = new ObjectMapper();
+//                String input = GSON.toJson(providerDtoList);
+                String input = "";
+                try {
+                    input = mapper.writeValueAsString(providerDtoList);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
                 OutputStream os = httpUrlConnection.getOutputStream();
                 os.write(input.getBytes());
@@ -99,10 +109,10 @@ public class ProviderServiceImpl implements ProviderService {
 
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
-                    for(ProviderDto providerDto: providerDtoList)
-                    {
-                        providerRepository.updateProvider(providerDto.getCodigoSap());
-                    }
+//                    for(ProviderDto providerDto: providerDtoList)
+//                    {
+//                        providerRepository.updateProvider(providerDto.getCodigoSap());
+//                    }
 
                     status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
@@ -110,19 +120,36 @@ public class ProviderServiceImpl implements ProviderService {
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Envio Correcto");
                 } else {
-                    status = "F";
+                    status = providerDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-                responseBody = String.valueOf(responseApi);
-                requestBody = GSON.toJson(providerDtoList);
-
-                transactionLogService.saveTransactionLog("Maestro Provider", "M",
+//                responseBody = String.valueOf(responseApi);
+//                requestBody = GSON.toJson(providerDtoList);
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Provider", "M",
                         "MP", "Data Maestra",
-                        status, requestBody, responseBody);
+                        status, input, responseBody);
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for(ProviderDto providerDto : providerDtoList){
+                    boolean valid = positionsError.contains(providerDtoList.indexOf(providerDto));
+                    if(!valid) {
+                        providerRepository.updateProvider(providerDto.getCodigoSap());
+                    }
+                }
 
             } else{
                 responseDto.setCode(HttpStatus.OK.value());

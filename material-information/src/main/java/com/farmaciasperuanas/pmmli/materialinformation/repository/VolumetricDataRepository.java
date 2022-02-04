@@ -21,6 +21,6 @@ public interface VolumetricDataRepository extends JpaRepository<VolumetricData, 
     @Transactional
     @Query(value = "UPDATE SWLI.VOLUMETRIC_DATA " +
             "SET FLAGLI = 1 " +
-            "WHERE MATERIAL_CODE = :materialCode", nativeQuery = true)
-    void updateVolumetricData(@Param("materialCode") String materialCode);
+            "WHERE MATERIAL_CODE = :materialCode AND UMA = :uma", nativeQuery = true)
+    void updateVolumetricData(@Param("materialCode") String materialCode,@Param("uma") String uma);
 }

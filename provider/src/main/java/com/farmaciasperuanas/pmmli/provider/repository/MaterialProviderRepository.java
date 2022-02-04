@@ -21,6 +21,6 @@ public interface MaterialProviderRepository extends JpaRepository<MaterialProvid
     @Transactional
     @Query(value = "UPDATE SWLI.MATERIAL_PROVIDER " +
             "SET FLAGLI = 1 " +
-            "WHERE MATERIAL_INKA = :materialInka", nativeQuery = true)
-    void updateMaterialProvider(@Param("materialInka") String materialInka);
+            "WHERE MATERIAL_INKA = :materialInka and PROVIDER_CODE = :prov", nativeQuery = true)
+    void updateMaterialProvider(@Param("materialInka") String materialInka,@Param("prov") String prov);
 }
