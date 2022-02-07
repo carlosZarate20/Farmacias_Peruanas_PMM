@@ -112,7 +112,8 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "FROM SWLI.TRANSACTION_LOG  " +
             "WHERE ((:validateDate = -1) OR ((:validateDate <> -1) and (DATE_TRANSACTION BETWEEN to_date(:intiDate, 'DD/MM/YYYY HH24:MI:SS') AND to_date(:finalDate, 'DD/MM/YYYY HH24:MI:SS')))) " +
             "and ((:validateState = -1) OR ((:validateState <> -1) and (STATE = :state)))" +
-            "and ((:validateTransaction = -1) OR ((:validateTransaction <> -1) and (CODE_TRANSACTION = :codeTransaction)))",
+            "and ((:validateTransaction = -1) OR ((:validateTransaction <> -1) and (CODE_TRANSACTION = :codeTransaction))) " +
+            "order by DATE_TRANSACTION desc",
             nativeQuery = true)
     List<TransactionLog> getTransactionLogFilter(@Param("intiDate") String intiDate,
                                            @Param("finalDate") String finalDate,

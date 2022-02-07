@@ -7,6 +7,7 @@ import com.farmaciasperuanas.pmmli.monitor.entity.TransactionType;
 import com.farmaciasperuanas.pmmli.monitor.repository.ErrorTypeRepository;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionLogRepository;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTypeRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -175,6 +176,12 @@ public class TransactionLogServiceImpl implements TransactionLogService{
         Integer validateDate = -1;
         Integer validateTypeTransaction= -1;
         Integer validateState = -1;
+        String dateInit = "";
+        String dateEnd = "";
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dt2 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
+        Double cantpages2 = 0.0;
+        Integer cantPages = 0;
 
         if(!transactionLogRequestDto.getState().equals("") && transactionLogRequestDto.getState() != null){
             validateState = 1;
@@ -184,7 +191,14 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             validateTypeTransaction = 1;
         }
 
-        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss aa");
+        if(transactionLogRequestDto.getStartDate() != null && transactionLogRequestDto.getEndDate() != null){
+            dateInit = dt.format(transactionLogRequestDto.getStartDate());
+            dateEnd = dt.format(transactionLogRequestDto.getEndDate());
+            validateDate = 1;
+        } else {
+            dateInit = "";
+            dateEnd = "";
+        }
 
         Integer init = transactionLogRequestDto.getRows() * transactionLogRequestDto.getPage();
 
@@ -192,28 +206,32 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 
         List<TransactionLogDto> transactionLogDtoList = new ArrayList<>();
 
-        List<TransactionLog> transactionLogList = transactionLogRepository.getTransactionLogFilter(dt.format(transactionLogRequestDto.getStartDate()),
-                dt.format(transactionLogRequestDto.getEndDate()), transactionLogRequestDto.getState(),
-                transactionLogRequestDto.getTypeTransaction(), validateDate, validateTypeTransaction, validateState, offsetLimitRequest);
+        List<TransactionLog> transactionLogList =
+                transactionLogRepository.getTransactionLogFilter(dateInit,
+                dateEnd, transactionLogRequestDto.getState(),
+                transactionLogRequestDto.getTypeTransaction(), validateDate,
+                validateTypeTransaction, validateState, offsetLimitRequest);
 
-        Integer count = transactionLogRepository.getTransactionLogFilterCount("27/01/2022",
-                "03/02/2022", transactionLogRequestDto.getState(), "MP", validateDate, validateTypeTransaction, validateState);
+        Integer count = transactionLogRepository.getTransactionLogFilterCount(dateInit,
+                dateEnd, transactionLogRequestDto.getState(), transactionLogRequestDto.getTypeTransaction(), validateDate, validateTypeTransaction, validateState);
 
-        Integer cantPages = transactionLogList.size() == 0 ? 0 : count / transactionLogList.size();
+        if(transactionLogRequestDto.getRows() != transactionLogList.size()){
+            cantPages = transactionLogRequestDto.getPage() + 1;
+        } else{
+            cantpages2 = transactionLogList.size() == 0 ? 0.0 : (double) count / transactionLogList.size();
+            cantPages = (int) Math.ceil(cantpages2);
+        }
 
-        String idenTransaction = "";
         for(TransactionLog transactionLog: transactionLogList){
             TransactionLogDto transactionLogDto = new TransactionLogDto();
             transactionLogDto.setIdTran(transactionLog.getIdTransacctionLog());
-            idenTransaction = String.valueOf(transactionLog.getIdTransacctionLog());
-            transactionLogDto.setIdentTransaction(String.format("%6s", String.valueOf(transactionLog.getIdTransacctionLog()).replace(' ','0')));
+            transactionLogDto.setIdentTransaction(StringUtils.leftPad("" + transactionLog.getIdTransacctionLog(), 6, "0"));
             transactionLogDto.setNameTransaction(transactionLog.getNameTransaction());
             transactionLogDto.setEstado(transactionLog.getState());
-            transactionLogDto.setFechaTransaccion(dt.format(transactionLog.getDateTransaction()));
+            transactionLogDto.setFechaTransaccion(dt2.format(transactionLog.getDateTransaction()));
             transactionLogDtoList.add(transactionLogDto);
         }
-
-        response.setLength(cantPages);
+        response.setPages(cantPages);
         response.setData(transactionLogDtoList);
 
 //        List<Object[]> transactionLogFilterDtoList = transactionLogRepository.getTransactionLogFilter("27/01/2022",

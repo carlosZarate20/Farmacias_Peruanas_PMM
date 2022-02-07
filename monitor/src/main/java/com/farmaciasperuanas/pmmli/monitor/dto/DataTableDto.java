@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class DataTableDto <T>{
-    private Integer length;
+    private Integer pages;
     private List<T> data;
 }
