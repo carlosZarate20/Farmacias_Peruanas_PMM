@@ -2,13 +2,16 @@ package com.farmaciasperuanas.pmmli.monitor.rest;
 
 import com.farmaciasperuanas.pmmli.monitor.dto.*;
 import com.farmaciasperuanas.pmmli.monitor.entity.TransactionTask;
+import com.farmaciasperuanas.pmmli.monitor.entity.UserAccess;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTaskRepository;
 import com.farmaciasperuanas.pmmli.monitor.service.EndpointService;
 import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
+import com.farmaciasperuanas.pmmli.monitor.service.UserAccessService;
 import com.farmaciasperuanas.pmmli.monitor.task.*;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +74,10 @@ public class MonitorController {
 
   @Autowired
   private TransactionTaskRepository transactionTaskService;
+
+  @Autowired
+  private UserAccessService userAccessService;
+
 
   @RequestMapping("/listaDataMaestra")
   public List<DataMaestraDto> listarDataMaestra() {
@@ -166,5 +173,10 @@ public class MonitorController {
   @PostMapping("/listarTransactionLog")
   public DataTableDto<TransactionLogDto> listarTransactionLog(@RequestBody TransactionLogRequestDto transactionLogRequestDto){
     return transactionLogService.listarTransactionLog(transactionLogRequestDto);
+  }
+
+  @PostMapping("/saveUser")
+  public ResponseDto<UserAccess> listarTransactionLog(@RequestBody SaveUserDTO user){
+    return userAccessService.saveUser(user.getUsername(),user.getPassword(),user.getName(),user.getEmail(),user.getProfileId());
   }
 }
