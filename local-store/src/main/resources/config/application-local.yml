@@ -22,9 +22,10 @@ spring:
     jpa:
       show-sql: true
       hibernate:
-        ddl-auto: none
+        ddl-auto: created
 
       database-platform: org.hibernate.dialect.Oracle10gDialect
+      use-new-id-generator-mappings: false
     application:
       url-session: https://dev-logisticainversa.solucionesfps.pe/users/signin
       name: fps-expc-ms-com.farmaciasperuanas.pmmli.localstore-localstore

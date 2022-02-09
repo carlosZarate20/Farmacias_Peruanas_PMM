@@ -22,7 +22,8 @@ import java.util.Date;
                         @StoredProcedureParameter(mode=ParameterMode.IN, name="TRANSACTION_LOG_ID", type=Long.class),
                         @StoredProcedureParameter(mode=ParameterMode.IN, name="SESSION_NUMBER_VAL", type=Integer.class),
                         @StoredProcedureParameter(mode=ParameterMode.IN, name="DESC_PRD_NUMBER_VAL", type=String.class),
-                        @StoredProcedureParameter(mode=ParameterMode.IN, name="DESC_LOTE_VAL", type=String.class)
+                        @StoredProcedureParameter(mode=ParameterMode.IN, name="DESC_LOTE_VAL", type=String.class),
+                        @StoredProcedureParameter(mode=ParameterMode.IN, name="INDETIFIER_VAL", type=String.class)
                 })
 })
 public class ProviderExit implements Serializable {

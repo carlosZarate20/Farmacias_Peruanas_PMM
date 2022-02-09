@@ -103,7 +103,10 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
                         "T", "PE", "Transaccion" ,status , requestBody , responseBody);
 
-                providerExitRepository.storeProcedureLogError(tl.getIdTransacctionLog(), sessionNumber, "Código del material: ", ", Nro Lote: ");
+                providerExitRepository.storeProcedureLogError(tl.getIdTransacctionLog(),
+                        sessionNumber, "Código del material: ",
+                        ", Nro Lote: ",
+                        "PE");
 
                 List<TransactionLogError> transactionLogErrorList = transactionLogErrorRepository.getTransactionLogError(tl.getIdTransacctionLog());
                 for(TransactionLogError transactionLogError: transactionLogErrorList){

@@ -21,11 +21,10 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
     @Modifying
     @Transactional
     @Query(value = "update SWLI.TRANSACTION_LOG " +
-            "set CANT_TRANSACTION = :cantTransaction, " +
-            "DATE_TRANSACTION = NVL((to_date(:date, 'DD/MM/YYYY HH24:MI:SS')), NULL)" +
-            "where TYPE_TRANSACTION = :type ", nativeQuery = true)
-    void updateTransaction(@Param("cantTransaction") Integer cantTransaction,
-                           @Param("type") String type, @Param("date") String date);
+            "set JSON_RESPONSE = :jsonResponse " +
+            "where ID_TRANSACTION_LOG = :idTransactionLog", nativeQuery = true)
+    void updateTransaction(@Param("jsonResponse") String jsonResponse,
+                           @Param("idTransactionLog") Long idTransactionLog);
 
     @Modifying
     @Transactional

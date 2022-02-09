@@ -1,9 +1,17 @@
 package com.farmaciasperuanas.pmmli.localstore.rest;
 
+import com.farmaciasperuanas.pmmli.localstore.dto.LocalReturnDto;
+import com.farmaciasperuanas.pmmli.localstore.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.localstore.service.LocalReturnService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Controlador principal que expone el servicio a trav&eacute;s de HTTP/Rest para
@@ -26,9 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LocalReturnController {
 
-  @RequestMapping("/localstores")
-  public String dummy() {
-    return "This is a dummy method";
+  @Autowired
+  private LocalReturnService localReturnService;
+
+  @PostMapping("/enviarExtornosLiPMM")
+  public ResponseDto enviarExtornosLiPMM(@RequestBody List<LocalReturnDto> localReturnDtoList) {
+    return localReturnService.enviarExtornosLi(localReturnDtoList);
   }
 
 }
