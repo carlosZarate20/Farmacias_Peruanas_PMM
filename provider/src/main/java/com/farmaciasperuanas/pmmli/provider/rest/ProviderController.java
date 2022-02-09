@@ -34,7 +34,7 @@ public class ProviderController {
   private ProviderService providerService;
 
   @PostMapping("/enviarProveedor")
-  public ResponseDto enviarProveedorLi(HttpServletRequest httpSession){
+  public ResponseDto enviarProveedorLi(){
     return providerService.registrarProveedorLi();
   }
 

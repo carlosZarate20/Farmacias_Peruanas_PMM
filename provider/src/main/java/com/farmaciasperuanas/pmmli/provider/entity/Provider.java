@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "PROVIDER")
+@Table(name = "PROVIDER", schema = "SWLI")
 public class Provider{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_PROVIDER")
-    private Integer idProvider;
+    private Long idProvider;
 
     @Column(name = "CODE")
     private String code;
