@@ -25,15 +25,13 @@ public interface CdTransferOutRepository extends JpaRepository<CdTransferOut, Lo
     @Procedure(name = "java_procedure_traslado_cd_salida")
     void storeProcedure(@Param("SESSION_NUMBER_VAL") Integer SESSION_NUMBER_VAL);
 
-    @Procedure(name = "java_procedure_transaction_error_salida")
-    void storeProcedureLogError(@Param("TRANSACTION_LOG_ID") Long TRANSACTION_LOG_ID, @Param("SESSION_NUMBER_VAL") Integer SESSION_NUMBER_VAL,
-                                @Param("DESC_PRD_NUMBER_VAL") String DESC_PRD_NUMBER_VAL,
-                                @Param("DESC_LOTE_VAL") String DESC_LOTE_VAL,
-                                @Param("INDETIFIER_VAL") String INDETIFIER_VAL);
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPSDITRFDTI " +
             "where SESSION_NUMBER = :sessionNumber", nativeQuery = true)
     Integer validateExitsError(@Param("sessionNumber") Integer sessionNumber);
+
+    @Query("select cdi from CdTransferOut cdi where cdi.sessionNumber = :sessionNumber and cdi.techKey = :techKey")
+    CdTransferOut getCdTransferOut(@Param("sessionNumber") Integer sessionNumber, @Param("techKey") Integer techKey);
 
 }

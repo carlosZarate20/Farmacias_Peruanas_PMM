@@ -3,9 +3,11 @@ package com.farmaciasperuanas.pmmli.localstore.service;
 import com.farmaciasperuanas.pmmli.localstore.dto.ErrorsDto;
 import com.farmaciasperuanas.pmmli.localstore.dto.LocalReturnDto;
 import com.farmaciasperuanas.pmmli.localstore.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.localstore.entity.CodErrorSdi;
 import com.farmaciasperuanas.pmmli.localstore.entity.LocalReturn;
 import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLogError;
+import com.farmaciasperuanas.pmmli.localstore.repository.CodErrorSdiRepository;
 import com.farmaciasperuanas.pmmli.localstore.repository.LocalReturnRepository;
 import com.farmaciasperuanas.pmmli.localstore.repository.TransactionLogErrorRepository;
 import com.farmaciasperuanas.pmmli.localstore.repository.TransactionLogRepository;
@@ -28,11 +30,10 @@ public class LocalReturnServiceImpl implements LocalReturnService{
     private TransactionLogService transactionLogService;
 
     @Autowired
-    private TransactionLogErrorRepository transactionLogErrorRepository;
+    private CodErrorSdiRepository codErrorSdiRepository;
 
     @Autowired
-    private TransactionLogRepository transactionLogRepository;
-
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Override
     public ResponseDto enviarExtornosLi(List<LocalReturnDto> localReturnDtoList) {
@@ -45,7 +46,7 @@ public class LocalReturnServiceImpl implements LocalReturnService{
         String status = "";
         Integer contTechKey = 1;
         List<ErrorsDto> errorsDtoList = new ArrayList<>();
-
+        List<ErrorsDto> listResponseBody = new ArrayList<>();
         try{
             ObjectMapper mapper = new ObjectMapper();
 
@@ -76,7 +77,6 @@ public class LocalReturnServiceImpl implements LocalReturnService{
 
                 contTechKey++;
             }
-
             //consumimos el procedure para insertar los datos en pmm
             localReturnRepository.storeProcedureLocalReturn(sessionNumber);
 
@@ -84,39 +84,45 @@ public class LocalReturnServiceImpl implements LocalReturnService{
             Integer validateExitsError = localReturnRepository.validateExitsError(sessionNumber);
 
             if(validateExitsError != 0){
+
+                List<CodErrorSdi> errorSdiList = codErrorSdiRepository.listError(sessionNumber, "LR");
+                for (CodErrorSdi codErrorSdi: errorSdiList) {
+                    LocalReturn localReturn = localReturnRepository.getLocalReturn(sessionNumber, codErrorSdi.getTechKey());
+
+                    ErrorsDto errorsDtoBody = new ErrorsDto();
+                    String identificador = "Codigo Material: " + localReturn.getPrdLvlNumber() + ", Nro Lote: " + localReturn.getTrfLote();
+                    errorsDtoBody.setIdentifier(identificador);
+                    errorsDtoBody.setMessage(codErrorSdi.getRejDesc());
+                    errorsDtoList.add(errorsDtoBody);
+
+                    ErrorsDto errorsDtoLi = new ErrorsDto();
+                    errorsDtoLi.setIdentifier(localReturn.getTrfSourceId());
+                    errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
+                    listResponseBody.add(errorsDtoLi);
+                }
+
                 requestBody = mapper.writeValueAsString(localReturnDtoList);
                 status = localReturnDtoList.size() == validateExitsError ? "F" : "FP";
 
                 responseDto.setStatus(false);
                 responseDto.setMessage(status.equalsIgnoreCase("F")  ? Constants.MESSAGE_FALLO_TOTAL_TRANSACTION : Constants.MESSAGE_FALLO_PARCIAL_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(listResponseBody);
 
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
                         "T", "LR", "Transaccion" ,status , requestBody , responseBody);
 
-                localReturnRepository.storeProcedureLogError(tl.getIdTransacctionLog(),
-                        sessionNumber, "Código del material: ",
-                        ", Nro Lote: ",
-                        "LR");
-
-                List<TransactionLogError> transactionLogErrorList = transactionLogErrorRepository.getTransactionLogError(tl.getIdTransacctionLog());
-                for(TransactionLogError transactionLogError: transactionLogErrorList){
-                    ErrorsDto errorsDto = new ErrorsDto();
-                    errorsDto.setIdentifier(transactionLogError.getIdentifier().trim());
-                    errorsDto.setMessage(transactionLogError.getMessage());
-                    errorsDtoList.add(errorsDto);
+                for(ErrorsDto errorsDto: errorsDtoList){
+                    transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
                 }
 
-                responseDto.setBody(errorsDtoList);
-                responseBody = mapper.writeValueAsString(responseDto);
-                transactionLogRepository.updateTransaction(responseBody,tl.getIdTransacctionLog());
             } else {
                 requestBody = mapper.writeValueAsString(localReturnDtoList);
                 status = "C";
 
-                responseDto.setStatus(false);
+                responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
                 responseBody = mapper.writeValueAsString(responseDto);

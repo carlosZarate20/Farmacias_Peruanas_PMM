@@ -135,6 +135,11 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
                         "MMP", "Data Maestra",
                         status, input, responseBody);
+
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
                 List<Integer> positionsError = responseApi.getErrors().stream()
                         .map(ResponseApiErrorItem::getPosition)
                         .collect(Collectors.toList());

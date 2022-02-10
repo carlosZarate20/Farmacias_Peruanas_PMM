@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long>{
@@ -30,14 +31,12 @@ public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long
     @Procedure(name = "java_procedure_salida_proveedor")
     void storeProcedure(@Param("SESSION_NUMBER_VAL") Integer SESSION_NUMBER_VAL);
 
-    @Procedure(name = "java_procedure_transaction_error")
-    void storeProcedureLogError(@Param("TRANSACTION_LOG_ID") Long TRANSACTION_LOG_ID, @Param("SESSION_NUMBER_VAL") Integer SESSION_NUMBER_VAL,
-                                @Param("DESC_PRD_NUMBER_VAL") String DESC_PRD_NUMBER_VAL,
-                                @Param("DESC_LOTE_VAL") String DESC_LOTE_VAL,
-                                @Param("INDETIFIER_VAL") String INDETIFIER_VAL);
-
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPSDIRTVDTI " +
             "where SESSION_NUMBER = :sessionNumber", nativeQuery = true)
     Integer validateExitsError(@Param("sessionNumber") Integer sessionNumber);
+
+    @Query("select p from ProviderExit p where p.sessionNumber = :sessionNumber and p.techKey = :techKey")
+    ProviderExit getProviderExit(@Param("sessionNumber") Integer sessionNumber, @Param("techKey") Integer techKey);
+
 }

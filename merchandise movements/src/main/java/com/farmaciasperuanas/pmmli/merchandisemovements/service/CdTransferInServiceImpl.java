@@ -4,9 +4,11 @@ import com.farmaciasperuanas.pmmli.merchandisemovements.dto.CdTransferInDto;
 import com.farmaciasperuanas.pmmli.merchandisemovements.dto.ErrorsDto;
 import com.farmaciasperuanas.pmmli.merchandisemovements.dto.ResponseDto;
 import com.farmaciasperuanas.pmmli.merchandisemovements.entity.CdTransferIn;
+import com.farmaciasperuanas.pmmli.merchandisemovements.entity.CodErrorSdi;
 import com.farmaciasperuanas.pmmli.merchandisemovements.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.merchandisemovements.entity.TransactionLogError;
 import com.farmaciasperuanas.pmmli.merchandisemovements.repository.CdTransferInRepository;
+import com.farmaciasperuanas.pmmli.merchandisemovements.repository.CodErrorSdiRepository;
 import com.farmaciasperuanas.pmmli.merchandisemovements.repository.TransactionLogErrorRepository;
 import com.farmaciasperuanas.pmmli.merchandisemovements.repository.TransactionLogRepository;
 import com.farmaciasperuanas.pmmli.merchandisemovements.util.Constants;
@@ -32,10 +34,10 @@ public class CdTransferInServiceImpl implements CdTransferInService {
     private TransactionLogService transactionLogService;
 
     @Autowired
-    private TransactionLogErrorRepository transactionLogErrorRepository;
+    private CodErrorSdiRepository codErrorSdiRepository;
 
     @Autowired
-    private TransactionLogRepository transactionLogRepository;
+    private TransactionLogErrorService transactionLogErrorService;
 
     public ResponseDto transferCdIn(List<CdTransferInDto> providerExitDtoList) {
         ResponseDto responseDto = new ResponseDto();
@@ -51,6 +53,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
         String status = "";
         Integer contTechKey = 1;
         List<ErrorsDto> errorsDtoList = new ArrayList<>();
+        List<ErrorsDto> listResponseBody = new ArrayList<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             //obtenemos el correlativo session_number
@@ -78,8 +81,6 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 cdTransferIn.setTrfSourceId(Constants.TRF_SOURCE_ID);
                 cdTransferIn.setTrfLote(dto.getTrfLote());
                 cdTransferIn.setTrfVctoLote(dto.getTrfVctoLote());
-
-
 //
                 cdTransferInRepository.save(cdTransferIn);
                 contTechKey++;
@@ -91,37 +92,43 @@ public class CdTransferInServiceImpl implements CdTransferInService {
             Integer validateExitsError = cdTransferInRepository.validateExitsError(sessionNumber);
 //
             if(validateExitsError != 0){
+                List<CodErrorSdi> errorSdiList = codErrorSdiRepository.listError(sessionNumber, "CTI");
+
+                for (CodErrorSdi codErrorSdi: errorSdiList) {
+                    CdTransferIn cdTransferIn = cdTransferInRepository.getCdTransferIn(sessionNumber, codErrorSdi.getTechKey());
+                    ErrorsDto errorsDtoBody = new ErrorsDto();
+                    String identificador = "Codigo Material: " + cdTransferIn.getPrdLvlNumber() + ", Nro Lote: " + cdTransferIn.getTrfLote();
+                    errorsDtoBody.setIdentifier(identificador);
+                    errorsDtoBody.setMessage(codErrorSdi.getRejDesc());
+                    errorsDtoList.add(errorsDtoBody);
+
+                    ErrorsDto errorsDtoLi = new ErrorsDto();
+                    errorsDtoLi.setIdentifier(cdTransferIn.getTrfSourceId());
+                    errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
+                    listResponseBody.add(errorsDtoLi);
+                }
                 requestBody = mapper.writeValueAsString(providerExitDtoList);
                 status = providerExitDtoList.size() == validateExitsError ? "F" : "FP";
 
                 responseDto.setStatus(false);
                 responseDto.setMessage(status.equalsIgnoreCase("F")  ? Constants.MESSAGE_FALLO_TOTAL_TRANSACTION : Constants.MESSAGE_FALLO_PARCIAL_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(listResponseBody);
 
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION_IN,
                         "T", "CTI", "Transaccion" ,status , requestBody , responseBody);
 
-                cdTransferInRepository.storeProcedureLogError(tl.getIdTransacctionLog(), sessionNumber, "Código del material: ", ", Nro Lote: ","CDT");
-
-                List<TransactionLogError> transactionLogErrorList = transactionLogErrorRepository.getTransactionLogError(tl.getIdTransacctionLog());
-                for(TransactionLogError transactionLogError: transactionLogErrorList){
-                    ErrorsDto errorsDto = new ErrorsDto();
-                    errorsDto.setIdentifier(transactionLogError.getIdentifier().trim());
-                    errorsDto.setMessage(transactionLogError.getMessage());
-                    errorsDtoList.add(errorsDto);
+                for(ErrorsDto errorsDto: errorsDtoList){
+                    transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
                 }
-
-                responseDto.setBody(errorsDtoList);
-                responseBody = mapper.writeValueAsString(responseDto);
-                transactionLogRepository.updateTransaction(responseBody,tl.getIdTransacctionLog());
 
             } else {
                 requestBody = mapper.writeValueAsString(providerExitDtoList);
                 status = "C";
 
-                responseDto.setStatus(false);
+                responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
                 responseBody = mapper.writeValueAsString(responseDto);

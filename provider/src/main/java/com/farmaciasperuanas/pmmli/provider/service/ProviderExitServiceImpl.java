@@ -3,12 +3,11 @@ package com.farmaciasperuanas.pmmli.provider.service;
 import com.farmaciasperuanas.pmmli.provider.dto.ErrorsDto;
 import com.farmaciasperuanas.pmmli.provider.dto.ProviderExitDto;
 import com.farmaciasperuanas.pmmli.provider.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.provider.entity.CodErrorSdi;
 import com.farmaciasperuanas.pmmli.provider.entity.ProviderExit;
 import com.farmaciasperuanas.pmmli.provider.entity.TransactionLog;
-import com.farmaciasperuanas.pmmli.provider.entity.TransactionLogError;
+import com.farmaciasperuanas.pmmli.provider.repository.CodErrorSdiRepository;
 import com.farmaciasperuanas.pmmli.provider.repository.ProviderExitRepository;
-import com.farmaciasperuanas.pmmli.provider.repository.TransactionLogErrorRepository;
-import com.farmaciasperuanas.pmmli.provider.repository.TransactionLogRepository;
 import com.farmaciasperuanas.pmmli.provider.util.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -33,10 +32,10 @@ public class ProviderExitServiceImpl implements ProviderExitService{
     private TransactionLogService transactionLogService;
 
     @Autowired
-    private TransactionLogErrorRepository transactionLogErrorRepository;
+    private TransactionLogErrorService transactionLogErrorService;
 
     @Autowired
-    private TransactionLogRepository transactionLogRepository;
+    private CodErrorSdiRepository codErrorSdiRepository;
 
     @Override
     public ResponseDto guardarSalidaProveedorPMM(List<ProviderExitDto> providerExitDtoList) {
@@ -53,6 +52,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
         String status = "";
         Integer contTechKey = 1;
         List<ErrorsDto> errorsDtoList = new ArrayList<>();
+        List<ErrorsDto> listResponseBody = new ArrayList<>();
         try{
             ObjectMapper mapper = new ObjectMapper();
             //obtenemos el correlativo session_number
@@ -79,7 +79,6 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 providerExit.setRtvEntryMethod(Constants.RTV_ENTRY_METHOD);
                 providerExit.setRtvLote(providerExitDto.getRtvLote());
                 providerExit.setRtvVctoLote(providerExitDto.getRtvVctoLote());
-                providerExit.setFlagLi(0L);
 
                 providerExitRepository.save(providerExit);
                 contTechKey++;
@@ -91,40 +90,46 @@ public class ProviderExitServiceImpl implements ProviderExitService{
             Integer validateExitsError = providerExitRepository.validateExitsError(sessionNumber);
 
             if(validateExitsError != 0){
-                requestBody = mapper.writeValueAsString(providerExitDtoList);
-                status = providerExitDtoList.size() == validateExitsError ? "F" : "FP";
 
+                List<CodErrorSdi> errorSdiList = codErrorSdiRepository.listError(sessionNumber, "PE");
+                for (CodErrorSdi codErrorSdi: errorSdiList) {
+
+                    ProviderExit providerExit = providerExitRepository.getProviderExit(sessionNumber, codErrorSdi.getTechKey());
+
+                    ErrorsDto errorsDtoBody = new ErrorsDto();
+                    String identificador = "Codigo Material: " + providerExit.getPrdLvlNumber() + ", Nro Lote: " + providerExit.getRtvLote();
+                    errorsDtoBody.setIdentifier(identificador);
+                    errorsDtoBody.setMessage(codErrorSdi.getRejDesc());
+                    errorsDtoList.add(errorsDtoBody);
+
+                    ErrorsDto errorsDtoLi = new ErrorsDto();
+                    errorsDtoLi.setIdentifier(providerExit.getRtvPriorId());
+                    errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
+                    listResponseBody.add(errorsDtoLi);
+                }
+
+                requestBody = mapper.writeValueAsString(providerExitDtoList);
+
+                status = providerExitDtoList.size() == validateExitsError ? "F" : "FP";
                 responseDto.setStatus(false);
                 responseDto.setMessage(status.equalsIgnoreCase("F")  ? Constants.MESSAGE_FALLO_TOTAL_TRANSACTION : Constants.MESSAGE_FALLO_PARCIAL_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(listResponseBody);
 
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
                         "T", "PE", "Transaccion" ,status , requestBody , responseBody);
 
-                providerExitRepository.storeProcedureLogError(tl.getIdTransacctionLog(),
-                        sessionNumber, "Código del material: ",
-                        ", Nro Lote: ",
-                        "PE");
-
-                List<TransactionLogError> transactionLogErrorList = transactionLogErrorRepository.getTransactionLogError(tl.getIdTransacctionLog());
-                for(TransactionLogError transactionLogError: transactionLogErrorList){
-                    ErrorsDto errorsDto = new ErrorsDto();
-                    errorsDto.setIdentifier(transactionLogError.getIdentifier().trim());
-                    errorsDto.setMessage(transactionLogError.getMessage());
-                    errorsDtoList.add(errorsDto);
+                for(ErrorsDto errorsDto: errorsDtoList){
+                    transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
                 }
-
-                responseDto.setBody(errorsDtoList);
-                responseBody = mapper.writeValueAsString(responseDto);
-                transactionLogRepository.updateTransaction(responseBody,tl.getIdTransacctionLog());
 
             } else {
                 requestBody = mapper.writeValueAsString(providerExitDtoList);
                 status = "C";
 
-                responseDto.setStatus(false);
+                responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
                 responseBody = mapper.writeValueAsString(responseDto);
@@ -132,7 +137,6 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
                         "T", "PE", "Transaccion",status, requestBody, responseBody);
             }
-
         } catch(Exception e){
             e.printStackTrace();
         }
