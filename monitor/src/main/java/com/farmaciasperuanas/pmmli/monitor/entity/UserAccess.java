@@ -30,7 +30,7 @@ public class UserAccess implements Serializable {
     @Column(name = "STATE")
     private Long state;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROFILE_USER_ID", referencedColumnName = "ID_PROFILE_USER")
     @JsonIgnore
     private ProfileUser profileUser;

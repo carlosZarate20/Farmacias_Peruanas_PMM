@@ -1,6 +1,10 @@
 server:
   port: 8084
-
+security:
+  jwt:
+    token:
+      secret-key: secret-key.
+      expire-length: 864000000
 spring:
   datasource:
     #jndi-name: jdbc/Sisrev

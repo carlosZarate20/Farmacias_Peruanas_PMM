@@ -1,5 +1,6 @@
 package com.farmaciasperuanas.pmmli.monitor.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,6 +24,6 @@ public class ProfileUser implements Serializable {
     @Column(name = "STATE")
     private Long state;
 
-    @OneToMany(mappedBy = "profileUser")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profileUser")
     private List<UserAccess>  userAccesses;
 }

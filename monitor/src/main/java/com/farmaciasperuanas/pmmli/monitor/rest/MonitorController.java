@@ -1,6 +1,8 @@
 package com.farmaciasperuanas.pmmli.monitor.rest;
 
 import com.farmaciasperuanas.pmmli.monitor.dto.*;
+import com.farmaciasperuanas.pmmli.monitor.dto.user.UserLoginDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.user.UserSignInResponseDTO;
 import com.farmaciasperuanas.pmmli.monitor.entity.TransactionTask;
 import com.farmaciasperuanas.pmmli.monitor.entity.UserAccess;
 import com.farmaciasperuanas.pmmli.monitor.repository.TransactionTaskRepository;
@@ -9,12 +11,16 @@ import com.farmaciasperuanas.pmmli.monitor.service.TransactionLogService;
 import com.farmaciasperuanas.pmmli.monitor.service.TaskSchedulingService;
 import com.farmaciasperuanas.pmmli.monitor.service.UserAccessService;
 import com.farmaciasperuanas.pmmli.monitor.task.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
@@ -178,5 +184,12 @@ public class MonitorController {
   @PostMapping("/saveUser")
   public ResponseDto<UserAccess> listarTransactionLog(@RequestBody SaveUserDTO user){
     return userAccessService.saveUser(user.getUsername(),user.getPassword(),user.getName(),user.getEmail(),user.getProfileId());
+  }
+
+  @PostMapping(value = "/login")
+  @ApiOperation(value = "${ReceptionMobileController.signIn}", authorizations = {@Authorization(value = "apiKey")})
+  public ResponseEntity<DataResponseDTO<UserSignInResponseDTO>> login(@RequestBody UserLoginDto dto) {
+    DataResponseDTO<UserSignInResponseDTO> response = userAccessService.login(dto.getUsername(), dto.getPassword());
+    return ResponseEntity.status(response.getStatus()).body(response);
   }
 }
