@@ -9,13 +9,13 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "PROVIDER_EXIT", schema = "SWLI")
-//@NamedStoredProcedureQueries({
-//        @NamedStoredProcedureQuery(name = "java_procedure_salida_proveedor",
-//                procedureName = "SWLI.PR_SALIDA_PROVEEDOR",
-//                parameters = {
-//                @StoredProcedureParameter(mode = ParameterMode.IN, name = "SESSION_NUMBER_VAL", type = Integer.class)
-//        })
-//})
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "java_procedure_salida_proveedor",
+                procedureName = "SWLI.PR_SALIDA_PROVEEDOR",
+                parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "SESSION_NUMBER_VAL", type = Integer.class)
+        })
+})
 public class ProviderExit implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

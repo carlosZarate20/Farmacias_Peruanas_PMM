@@ -23,7 +23,7 @@ public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long
             "and i.inv_units_per_inner = 1 " +
             "and p.prd_lvl_number = :prdLvlNumber " +
             "and rownum = 1", nativeQuery = true)
-    Integer getInnerPack(@Param("prdLvlNumber") String prdLvlNumber);
+    Integer getInnerPackValue(@Param("prdLvlNumber") String prdLvlNumber);
 
     @Query(value = "select pmm.SESSION_NUMBER.nextval from dual", nativeQuery = true)
     Integer getSessionNumber();
