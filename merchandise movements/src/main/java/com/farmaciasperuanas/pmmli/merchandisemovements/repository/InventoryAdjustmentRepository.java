@@ -21,7 +21,7 @@ public interface InventoryAdjustmentRepository extends JpaRepository<InventoryAd
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPINVREJEE " +
-            "where TRANS_SESSION = :transSession", nativeQuery = true)
+            "where TRANS_SESSION = :transSession and ERROR_CODE is not null", nativeQuery = true)
     Integer validateExitsError(@Param("transSession") Integer transSession);
 
     @Query("select ia from InventoryAdjustment ia where ia.transSession = :transSession and ia.transSequence = :transSequence")

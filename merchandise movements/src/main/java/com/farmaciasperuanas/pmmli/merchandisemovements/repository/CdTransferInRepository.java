@@ -21,7 +21,7 @@ public interface CdTransferInRepository extends JpaRepository<CdTransferIn, Long
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPSDITRFDTI " +
-            "where SESSION_NUMBER = :sessionNumber", nativeQuery = true)
+            "where SESSION_NUMBER = :sessionNumber and ERROR_CODE is not null", nativeQuery = true)
     Integer validateExitsError(@Param("sessionNumber") Integer sessionNumber);
 
     @Query("select cdi from CdTransferIn cdi where cdi.sessionNumber = :sessionNumber and cdi.techKey = :techKey")

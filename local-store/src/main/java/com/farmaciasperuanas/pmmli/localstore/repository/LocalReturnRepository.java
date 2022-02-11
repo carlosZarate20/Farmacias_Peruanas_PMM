@@ -21,7 +21,7 @@ public interface LocalReturnRepository extends JpaRepository<LocalReturn, Long> 
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPSDITRFDTI " +
-            "where SESSION_NUMBER = :sessionNumber", nativeQuery = true)
+            "where SESSION_NUMBER = :sessionNumber and ERROR_CODE is not null", nativeQuery = true)
     Integer validateExitsError(@Param("sessionNumber") Integer sessionNumber);
 
     @Query("select lr from LocalReturn lr where lr.sessionNumber = :sessionNumber and lr.techKey = :techKey")

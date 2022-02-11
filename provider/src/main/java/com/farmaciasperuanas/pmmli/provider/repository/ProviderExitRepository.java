@@ -27,7 +27,7 @@ public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPSDIRTVDTI " +
-            "where SESSION_NUMBER = :sessionNumber", nativeQuery = true)
+            "where SESSION_NUMBER = :sessionNumber and ERROR_CODE is not null", nativeQuery = true)
     Integer validateExitsError(@Param("sessionNumber") Integer sessionNumber);
 
     @Query("select p from ProviderExit p where p.sessionNumber = :sessionNumber and p.techKey = :techKey")

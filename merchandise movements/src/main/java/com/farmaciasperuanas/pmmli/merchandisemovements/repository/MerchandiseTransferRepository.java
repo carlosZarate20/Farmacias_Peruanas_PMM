@@ -21,7 +21,7 @@ public interface MerchandiseTransferRepository extends JpaRepository<Merchandise
 
     @Query(value = "select COUNT(*) " +
             "from pmm.FAPINVREJEE " +
-            "where TRANS_SESSION = :transSession", nativeQuery = true)
+            "where TRANS_SESSION = :transSession and ERROR_CODE is not null", nativeQuery = true)
     Integer validateExitsError(@Param("transSession") Integer transSession);
 
     @Query("select mt from MerchandiseTransfer mt where mt.transSession = :transSession and mt.transSequence = :transSequence")
