@@ -21,12 +21,12 @@ public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long
             "and i.loose_pack_flag = 'F' " +
             "and i.sll_units_per_inner = 1 " +
             "and i.inv_units_per_inner = 1 " +
-            "and p.prd_lvl_number = :prd_lvl_number " +
+            "and p.prd_lvl_number = :prdLvlNumber " +
             "and rownum = 1", nativeQuery = true)
-    Integer getInnerPack(@Param("prd_lvl_number") String prd_lvl_number);
+    Integer getInnerPack(@Param("prdLvlNumber") String prdLvlNumber);
 
     @Query(value = "select pmm.SESSION_NUMBER.nextval from dual", nativeQuery = true)
-    Integer getSessioNumber();
+    Integer getSessionNumber();
 
     @Procedure(name = "java_procedure_salida_proveedor")
     void storeProcedure(@Param("SESSION_NUMBER_VAL") Integer SESSION_NUMBER_VAL);

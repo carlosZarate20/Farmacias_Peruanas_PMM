@@ -1,9 +1,17 @@
 package com.farmaciasperuanas.pmmli.merchandisemovements.rest;
 
+import com.farmaciasperuanas.pmmli.merchandisemovements.dto.MerchandiseTransferDto;
+import com.farmaciasperuanas.pmmli.merchandisemovements.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.merchandisemovements.service.MerchandiseTransferService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Controlador principal que expone el servicio a trav&eacute;s de HTTP/Rest para
@@ -26,9 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MerchandiseTransferController {
 
-  @RequestMapping("/merchandisemovementss")
-  public String dummy() {
-    return "This is a dummy method";
+  @Autowired
+  private MerchandiseTransferService merchandiseTransferService;
+
+  @PostMapping("/merchandiseTransfer")
+  public ResponseDto enviarMerchandiseTransfer(@RequestBody List<MerchandiseTransferDto> merchandiseTransferDtoList) {
+    return merchandiseTransferService.enviarMerchandiseTransfer(merchandiseTransferDtoList);
   }
 
 }

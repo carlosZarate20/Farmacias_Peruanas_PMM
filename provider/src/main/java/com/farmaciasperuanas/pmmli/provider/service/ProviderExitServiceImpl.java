@@ -56,7 +56,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
         try{
             ObjectMapper mapper = new ObjectMapper();
             //obtenemos el correlativo session_number
-            sessionNumber = providerExitRepository.getSessioNumber();
+            sessionNumber = providerExitRepository.getSessionNumber();
 
             //insertamos en nuestra tabla intermedia
             for(ProviderExitDto providerExitDto: providerExitDtoList){
@@ -75,7 +75,9 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 providerExit.setRtvPriorId(providerExitDto.getRtvPriorId());
                 providerExit.setQuantity((double) providerExitDto.getQuantity());
                 providerExit.setDateCreated(dateCreate);
-                providerExit.setInnerPackId(providerExitRepository.getInnerPack(providerExit.getPrdLvlNumber()));
+                String prdLvlNumber = providerExitDto.getPrdLvlNumber();
+                Integer innerPackId = providerExitRepository.getInnerPack(prdLvlNumber);
+                providerExit.setInnerPackId(innerPackId);
                 providerExit.setRtvEntryMethod(Constants.RTV_ENTRY_METHOD);
                 providerExit.setRtvLote(providerExitDto.getRtvLote());
                 providerExit.setRtvVctoLote(providerExitDto.getRtvVctoLote());
