@@ -14,7 +14,13 @@ import java.util.Date;
                 procedureName = "SWLI.PR_TRASLADO_CD_ENTRADA",
                 parameters = {
                         @StoredProcedureParameter(mode = ParameterMode.IN, name = "SESSION_NUMBER_VAL", type = Integer.class)
-                })
+        }),
+        @NamedStoredProcedureQuery(name = "java_procedure_get_inner_pack_in",
+                procedureName = "SWLI.PR_GET_INNER_PACK",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "PRD_LVL_NUMBER_VAL", type = String.class),
+                        @StoredProcedureParameter(mode = ParameterMode.OUT, name ="INNER_PACK", type = Integer.class)
+        })
 })
 public class CdTransferIn implements Serializable {
     private static final long serialVersionUID = 1L;

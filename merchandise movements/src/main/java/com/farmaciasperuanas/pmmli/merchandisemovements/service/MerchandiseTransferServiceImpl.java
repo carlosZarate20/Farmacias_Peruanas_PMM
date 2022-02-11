@@ -65,15 +65,15 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
                 merchandiseTransfer.setTransUser(merchandiseTransferDto.getTransUser());
                 merchandiseTransfer.setTransBatchDate(dateCreate);
                 merchandiseTransfer.setTransSource(merchandiseTransferDto.getTransSource());
-                merchandiseTransfer.setTransAudited("F");
+                merchandiseTransfer.setTransAudited(Constants.TRANS_AUDITED);
                 merchandiseTransfer.setTransSequence(contTransSequence);
                 merchandiseTransfer.setTransTrnCode(merchandiseTransferDto.getTransTrnCode());
                 merchandiseTransfer.setTransTypeCode(merchandiseTransferDto.getTransTypeCode());
                 merchandiseTransfer.setTransDate(merchandiseTransferDto.getTransDate());
                 merchandiseTransfer.setInvMrptCode(merchandiseTransferDto.getInvMrptCode());
                 merchandiseTransfer.setInvDrptCode(merchandiseTransferDto.getInvDrptCode());
-                merchandiseTransfer.setTransCurrCode("PEN");
-                merchandiseTransfer.setTransOrgLvlNumber(9002);
+                merchandiseTransfer.setTransCurrCode(Constants.TRANS_CURR_CODE);
+                merchandiseTransfer.setTransOrgLvlNumber(Constants.TRANS_ORG_LVL_NUMBER);
                 merchandiseTransfer.setTransPrdLvlNumber(merchandiseTransferDto.getTransPrdLvlNumber());
                 merchandiseTransfer.setProcSource(merchandiseTransferDto.getProcSource());
                 merchandiseTransfer.setTransQty(merchandiseTransferDto.getTransQty());

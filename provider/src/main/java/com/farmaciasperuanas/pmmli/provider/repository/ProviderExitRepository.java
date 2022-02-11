@@ -16,14 +16,8 @@ import java.util.Optional;
 @Repository
 public interface ProviderExitRepository extends JpaRepository<ProviderExit, Long>{
 
-    @Query(value = "select i.inner_pack_id from pmm.prdpcdee i, pmm.prdmstee p " +
-            "where i.prd_lvl_child = p.prd_lvl_child " +
-            "and i.loose_pack_flag = 'F' " +
-            "and i.sll_units_per_inner = 1 " +
-            "and i.inv_units_per_inner = 1 " +
-            "and p.prd_lvl_number = :prdLvlNumber " +
-            "and rownum = 1", nativeQuery = true)
-    Integer getInnerPackValue(@Param("prdLvlNumber") String prdLvlNumber);
+    @Procedure(name = "java_procedure_get_inner_pack")
+    Integer getInnerPackProcedure(@Param("PRD_LVL_NUMBER_VAL") String PRD_LVL_NUMBER_VAL);
 
     @Query(value = "select pmm.SESSION_NUMBER.nextval from dual", nativeQuery = true)
     Integer getSessionNumber();

@@ -10,14 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CdTransferInRepository extends JpaRepository<CdTransferIn, Long> {
 
-    @Query(value = "select i.inner_pack_id from pmm.prdpcdee i, pmm.prdmstee p " +
-            "where i.prd_lvl_child = p.prd_lvl_child " +
-            "and i.loose_pack_flag = 'F' " +
-            "and i.sll_units_per_inner = 1 " +
-            "and i.inv_units_per_inner = 1 " +
-            "and p.prd_lvl_number = :prd_lvl_number " +
-            "and rownum = 1", nativeQuery = true)
-    Integer getInnerPack(@Param("prd_lvl_number") String prd_lvl_number);
+    @Procedure(name = "java_procedure_get_inner_pack_in")
+    Integer getInnerPack(@Param("PRD_LVL_NUMBER_VAL") String PRD_LVL_NUMBER_VAL);
 
     @Query(value = "select pmm.SESSION_NUMBER.nextval from dual", nativeQuery = true)
     Integer getSessionNumber();
