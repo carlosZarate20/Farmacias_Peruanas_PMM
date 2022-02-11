@@ -27,11 +27,11 @@ public class UserAccess implements Serializable {
     private String name;
     @Column(name = "EMAIL")
     private String email;
+    //0 : Activo, 1 : Inactivo, 2 : Bloqueado
     @Column(name = "STATE")
     private Long state;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROFILE_USER_ID", referencedColumnName = "ID_PROFILE_USER")
-    @JsonIgnore
     private ProfileUser profileUser;
 }

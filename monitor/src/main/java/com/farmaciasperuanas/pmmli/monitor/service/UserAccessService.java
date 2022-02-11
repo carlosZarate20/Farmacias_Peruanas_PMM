@@ -1,12 +1,22 @@
 package com.farmaciasperuanas.pmmli.monitor.service;
 
 import com.farmaciasperuanas.pmmli.monitor.dto.DataResponseDTO;
+import com.farmaciasperuanas.pmmli.monitor.dto.DataTableDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.ResponseDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.user.UserListItemDto;
+import com.farmaciasperuanas.pmmli.monitor.dto.user.UserListRequestDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.user.UserSignInResponseDTO;
 import com.farmaciasperuanas.pmmli.monitor.entity.UserAccess;
 
 public interface UserAccessService {
-    ResponseDto<UserAccess> saveUser(String username, String password, String name, String email, Long profileId);
+    ResponseDto<UserAccess> saveUser(String username,String name, String email, Long profileId);
 
     DataResponseDTO<UserSignInResponseDTO> login(String username, String password);
+
+    DataTableDto<UserListItemDto> userList(UserListRequestDto dto);
+
+    UserAccess getUser(Long id);
+
+    ResponseDto<UserAccess> updateUser(Long id,String username,String name, String email, Long profileId,Long state);
+
 }

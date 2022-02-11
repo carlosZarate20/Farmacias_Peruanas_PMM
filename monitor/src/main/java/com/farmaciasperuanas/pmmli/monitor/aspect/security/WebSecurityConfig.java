@@ -32,7 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Entry points
         http.authorizeRequests()//
-                .antMatchers("/login").permitAll()//
+                .antMatchers("/signIn").permitAll()//
+                .antMatchers("/saveUser").permitAll()//
 //                .antMatchers("/master_table/**").permitAll()//
                 .antMatchers("/h2-console/**/**").permitAll()
 //         Disallow everything else..
@@ -42,29 +43,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
 
         http.cors();
-
-        http
-                .headers()
-                .xssProtection()
-                .and()
-                .contentSecurityPolicy("script-src 'self'");
     }
-
-    @Override
-    public void configure(WebSecurity web) {
-        // Allow swagger to be accessed without authentication
-        web.ignoring().antMatchers("/v2/api-docs")//
-                .antMatchers("/swagger-resources/**")//
-                .antMatchers("/swagger-ui.html")//
-                .antMatchers("/configuration/**")//
-                .antMatchers("/webjars/**")//
-                .antMatchers("/public")
-
-                // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)
-                .and()
-                .ignoring()
-                .antMatchers("/h2-console/**/**");
-    }
+//
+//    @Override
+//    public void configure(WebSecurity web) {
+//        // Allow swagger to be accessed without authentication
+//        web.ignoring().antMatchers("/v2/api-docs")//
+//                .antMatchers("/swagger-resources/**")//
+//                .antMatchers("/swagger-ui.html")//
+//                .antMatchers("/configuration/**")//
+//                .antMatchers("/webjars/**")//
+//                .antMatchers("/public")
+//
+//                // Un-secure H2 Database (for testing purposes, H2 console shouldn't be unprotected in production)
+//                .and()
+//                .ignoring()
+//                .antMatchers("/h2-console/**/**");
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

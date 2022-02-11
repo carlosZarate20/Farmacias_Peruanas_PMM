@@ -212,8 +212,7 @@ public class TransactionLogServiceImpl implements TransactionLogService{
                 transactionLogRequestDto.getTypeTransaction(), validateDate,
                 validateTypeTransaction, validateState, offsetLimitRequest);
 
-        Integer count = transactionLogRepository.getTransactionLogFilterCount(dateInit,
-                dateEnd, transactionLogRequestDto.getState(), transactionLogRequestDto.getTypeTransaction(), validateDate, validateTypeTransaction, validateState);
+        Integer count = transactionLogRepository.getTransactionLogFilterCount(dateInit,dateEnd, transactionLogRequestDto.getState(), transactionLogRequestDto.getTypeTransaction(), validateDate, validateTypeTransaction, validateState);
 
         if(transactionLogRequestDto.getRows() != transactionLogList.size()){
             cantPages = transactionLogRequestDto.getPage() + 1;

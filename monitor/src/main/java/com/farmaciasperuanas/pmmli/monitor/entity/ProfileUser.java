@@ -25,5 +25,6 @@ public class ProfileUser implements Serializable {
     private Long state;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "profileUser")
+    @JsonIgnore
     private List<UserAccess>  userAccesses;
 }

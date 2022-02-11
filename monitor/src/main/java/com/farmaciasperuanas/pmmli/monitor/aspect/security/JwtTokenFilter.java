@@ -30,7 +30,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtTokenProvider.resolveToken(httpServletRequest);
-        if (token == null && !(httpServletRequest.getRequestURI().contains("login") || httpServletRequest.getRequestURI().contains("swagger")) ) {
+        String url = httpServletRequest.getRequestURI();
+        if (token == null && !(url.contains("signIn") || url.contains("saveUser")) ) {
 //        throw new JwtTokenMissingException("Acceso denegado",HttpStatus.FORBIDDEN.value(),"Prohibido el acceso");
             httpServletResponse.setContentType("application/json");
             httpServletResponse.setStatus(403);

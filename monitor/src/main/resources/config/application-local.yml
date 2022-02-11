@@ -6,6 +6,17 @@ security:
       secret-key: secret-key.
       expire-length: 864000000
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: notifier.brainbox@gmail.com
+    password: Brainbox.2022
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     #jndi-name: jdbc/Sisrev
     #    jndi-name: jdbc/SISREV-DS

@@ -3,10 +3,17 @@ package com.farmaciasperuanas.pmmli.monitor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
+
+import javax.mail.internet.MimeMessage;
+import java.io.InputStream;
 
 /**
  * Main class for running Spring Boot framework.<br/>
@@ -35,6 +42,7 @@ public class MonitorApplication {
 //  public PasswordEncoder passwordEncoder() {
 //    return new BCryptPasswordEncoder(12);
 //  }
+
     @Bean
     public RestTemplate getresttemplate() {
         return new RestTemplate();
