@@ -14,4 +14,7 @@ public class Constants {
     public static final String MESSAGE_OK_TRANSACTION = "Envio Correcto";
     public static final String MESSAGE_FALLO_TOTAL_TRANSACTION = "Envio Fallido Total";
     public static final String MESSAGE_FALLO_PARCIAL_TRANSACTION = "Envio Fallido Parcial";
+    public static final String TRANS_CURR_CODE = "PEN";
+    public static final String TRANS_AUDITED = "F";
+    public static final Integer TRANS_ORG_LVL_NUMBER = 9002;
 }
