@@ -72,6 +72,7 @@ public class LocalReturnServiceImpl implements LocalReturnService{
                 localReturn.setTrfSourceId(Constants.TRF_SOURCE_ID);
                 localReturn.setTrfLote(localReturnDto.getTrfLote());
                 localReturn.setTrfVctoLote(localReturnDto.getTrfVctoLote());
+                localReturn.setTrfQtyFlag(Constants.TRF_QTY_FLAG);
 
                 localReturnRepository.save(localReturn);
 

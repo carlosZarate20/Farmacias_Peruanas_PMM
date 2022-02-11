@@ -43,8 +43,6 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
         Integer transSession = 0;
 
         SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");
-        String dateFormat = dt.format(new Date());
-        Date dateCreate = new Date(dateFormat);
 
         String responseBody = "";
         String requestBody = "";
@@ -63,13 +61,15 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
                 MerchandiseTransfer merchandiseTransfer = new MerchandiseTransfer();
                 merchandiseTransfer.setTransSession(transSession);
                 merchandiseTransfer.setTransUser(merchandiseTransferDto.getTransUser());
-                merchandiseTransfer.setTransBatchDate(dateCreate);
-                merchandiseTransfer.setTransSource(merchandiseTransferDto.getTransSource());
+                merchandiseTransfer.setTransBatchDate(new Date());
+                merchandiseTransfer.setTransSource(Constants.TRANS_SOURCE_MF);
                 merchandiseTransfer.setTransAudited(Constants.TRANS_AUDITED);
                 merchandiseTransfer.setTransSequence(contTransSequence);
                 merchandiseTransfer.setTransTrnCode(merchandiseTransferDto.getTransTrnCode());
                 merchandiseTransfer.setTransTypeCode(merchandiseTransferDto.getTransTypeCode());
-                merchandiseTransfer.setTransDate(merchandiseTransferDto.getTransDate());
+                String dateFormat = dt.format(merchandiseTransferDto.getTransDate());
+                Date dateTrans = dt.parse(dateFormat);
+                merchandiseTransfer.setTransDate(dateTrans);
                 merchandiseTransfer.setInvMrptCode(merchandiseTransferDto.getInvMrptCode());
                 merchandiseTransfer.setInvDrptCode(merchandiseTransferDto.getInvDrptCode());
                 merchandiseTransfer.setTransCurrCode(Constants.TRANS_CURR_CODE);

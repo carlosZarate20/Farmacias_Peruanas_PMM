@@ -19,6 +19,7 @@ public class CdTransferInDto {
     private String trfReasonCode;
     private Integer toLoc;
     private Double quantity;
+    private Date dateCreated;
     private String requestedBy;
     private String trfLote;
     private Date trfVctoLote;

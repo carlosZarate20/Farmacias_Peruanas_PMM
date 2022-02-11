@@ -12,7 +12,6 @@ import java.util.Date;
 public class InventoryAdjustmentDto {
 
     private String transUser;
-    private String transSource;
     private String transTrnCode;
     private String transTypeCode;
     private Date transDate;

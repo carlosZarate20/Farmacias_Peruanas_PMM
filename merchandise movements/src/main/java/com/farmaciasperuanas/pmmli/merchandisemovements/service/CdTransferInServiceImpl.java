@@ -74,7 +74,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 cdTransferIn.setToLoc(dto.getToLoc());
                 cdTransferIn.setQuantity(dto.getQuantity());
                 cdTransferIn.setActionCode(Constants.ACTION_CODE);
-                cdTransferIn.setDateCreated(dateCreate);
+                cdTransferIn.setDateCreated(dto.getDateCreated());
                 cdTransferIn.setRequestedBy(dto.getRequestedBy());
                 cdTransferIn.setInnerPackId(cdTransferInRepository.getInnerPack(cdTransferIn.getPrdLvlNumber()));
                 cdTransferIn.setTrfQtyFlag(Constants.TRF_QTY_FLAG);

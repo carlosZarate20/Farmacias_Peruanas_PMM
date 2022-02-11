@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,8 +42,6 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
         Integer transSession = 0;
 
         SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");
-        String dateFormat = dt.format(new Date());
-        Date dateCreate = new Date(dateFormat);
 
         String responseBody = "";
         String requestBody = "";
@@ -61,13 +60,15 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
                 InventoryAdjustment inventoryAdjustment = new InventoryAdjustment();
                 inventoryAdjustment.setTransSession(transSession);
                 inventoryAdjustment.setTransUser(inventoryAdjustmentDto.getTransUser());
-                inventoryAdjustment.setTransBatchDate(dateCreate);
-                inventoryAdjustment.setTransSource(inventoryAdjustmentDto.getTransSource());
+                inventoryAdjustment.setTransBatchDate(new Date());
+                inventoryAdjustment.setTransSource(Constants.TRANS_SOURCE_CI);
                 inventoryAdjustment.setTransAudited(Constants.TRANS_AUDITED);
                 inventoryAdjustment.setTransSequence(contTransSequence);
                 inventoryAdjustment.setTransTrnCode(inventoryAdjustmentDto.getTransTrnCode());
                 inventoryAdjustment.setTransTypeCode(inventoryAdjustmentDto.getTransTypeCode());
-                inventoryAdjustment.setTransDate(inventoryAdjustmentDto.getTransDate());
+                String dateFormat = dt.format(inventoryAdjustmentDto.getTransDate());
+                Date dateTrans = dt.parse(dateFormat);
+                inventoryAdjustment.setTransDate(dateTrans);
                 inventoryAdjustment.setInvMrptCode(inventoryAdjustmentDto.getInvMrptCode());
                 inventoryAdjustment.setInvDrptCode(inventoryAdjustmentDto.getInvDrptCode());
                 inventoryAdjustment.setTransCurrCode(Constants.TRANS_CURR_CODE);

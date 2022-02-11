@@ -17,4 +17,6 @@ public class Constants {
     public static final String TRANS_CURR_CODE = "PEN";
     public static final String TRANS_AUDITED = "F";
     public static final Integer TRANS_ORG_LVL_NUMBER = 9002;
+    public static final String TRANS_SOURCE_CI = "Control Inventario";
+    public static final String TRANS_SOURCE_MF = "Traspaso CDLI";
 }
