@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class TransanctionDetailDto {
+    private String id;
+    private Integer sessionNumber;
     private String nameTransaction;
     private String state;
     private String dateTransaction;

@@ -112,6 +112,8 @@ public class TransactionLogServiceImpl implements TransactionLogService{
             transanctionDetailDto.setState(tran.getState());
             transanctionDetailDto.setDateTransaction(dt.format(tran.getDateTransaction()));
             transanctionDetailDto.setTransactionLogErrors(tran.getTransactionLogErrors());
+            transanctionDetailDto.setId(String.format("%6s", tran.getIdTransacctionLog()).replace(' ','0'));
+            transanctionDetailDto.setSessionNumber(tran.getSessionNumber());
         }
         return transanctionDetailDto;
     }
