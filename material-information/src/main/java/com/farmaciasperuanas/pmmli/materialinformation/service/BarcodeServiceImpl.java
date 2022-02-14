@@ -175,9 +175,10 @@ public class BarcodeServiceImpl implements BarcodeService{
 
 
         } catch (Exception e){
-            responseApiForbidden.setMessage(e.getMessage());
-            responseApiForbidden.setStatus(HttpStatus.FORBIDDEN.value());
-            responseDto.setBody(responseApiForbidden);
+            responseDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatus(false);
+            responseDto.setBody(e.getClass());
+            responseDto.setMessage(e.getMessage());
             e.printStackTrace();
         }
         return responseDto;

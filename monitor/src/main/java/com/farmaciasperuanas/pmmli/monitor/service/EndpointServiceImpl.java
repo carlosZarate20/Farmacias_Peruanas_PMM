@@ -9,6 +9,7 @@ import com.farmaciasperuanas.pmmli.monitor.util.Constants;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,6 +108,9 @@ public class EndpointServiceImpl implements EndpointService {
             }
 
         } catch (Exception e) {
+            responseDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatus(false);
+            responseDto.setMessage(e.getMessage());
             e.printStackTrace();
         }
         return responseDto;

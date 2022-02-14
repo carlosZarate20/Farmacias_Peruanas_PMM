@@ -139,9 +139,6 @@ public class StoreServiceImpl implements StoreService {
                 responseApi.setId(tl.getIdTransacctionLog());
 
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
-//                    for(StoreDto storeDto: storeDtoList){
-//                        storeRepository.updateStore(storeDto.getCodigo());
-//                    }
 
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
@@ -155,10 +152,6 @@ public class StoreServiceImpl implements StoreService {
                     responseDto.setMessage("Ocurrio un error");
                 }
 
-//                responseBody = String.valueOf(responseApi);
-//                String responseBody = "";
-
-
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
@@ -167,6 +160,10 @@ public class StoreServiceImpl implements StoreService {
             }
 
         } catch (Exception e) {
+            responseDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatus(false);
+            responseDto.setBody(e.getClass());
+            responseDto.setMessage(e.getMessage());
             e.printStackTrace();
         }
         return responseDto;

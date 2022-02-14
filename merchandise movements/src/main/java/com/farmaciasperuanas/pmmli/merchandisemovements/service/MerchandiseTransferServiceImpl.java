@@ -138,6 +138,10 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
             }
 
         } catch (Exception e){
+            responseDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatus(false);
+            responseDto.setBody(e.getClass());
+            responseDto.setMessage(e.getMessage());
             e.printStackTrace();
         }
         return responseDto;
