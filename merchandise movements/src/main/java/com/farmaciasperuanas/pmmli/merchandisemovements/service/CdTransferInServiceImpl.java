@@ -68,7 +68,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 cdTransferIn.setCarrierName(dto.getCarrierName().isEmpty() ? null : dto.getCarrierName());
                 cdTransferIn.setCartonNumber(dto.getCartonNumber().isEmpty() ? null : dto.getCartonNumber());
                 cdTransferIn.setPrdLvlNumber(dto.getPrdLvlNumber());
-                cdTransferIn.setJdaOrigin(Constants.JDA_ORIGIN);
+                cdTransferIn.setJdaOrigin(Constants.JDA_ORIGIN_IN);
                 cdTransferIn.setTrfReasonCode(dto.getTrfReasonCode());
                 cdTransferIn.setFromLoc(Constants.FROM_LOC);
                 cdTransferIn.setToLoc(dto.getToLoc());

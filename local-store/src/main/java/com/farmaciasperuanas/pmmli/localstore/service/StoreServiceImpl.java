@@ -62,6 +62,8 @@ public class StoreServiceImpl implements StoreService {
 
         String status = "";
         try {
+            storeRepository.procedureUpdate();
+
             storeDtoList = getListStore();
 
             if (storeDtoList.size() != 0) {

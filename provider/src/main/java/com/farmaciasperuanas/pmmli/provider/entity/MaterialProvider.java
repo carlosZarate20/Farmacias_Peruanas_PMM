@@ -8,6 +8,10 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "MATERIAL_PROVIDER", schema = "SWLI")
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "java_procedure_update_material_provider",
+                procedureName = "SWLI.PR_UPDATE_MATERIAL_PROVIDER")
+})
 public class MaterialProvider {
 
     @Id

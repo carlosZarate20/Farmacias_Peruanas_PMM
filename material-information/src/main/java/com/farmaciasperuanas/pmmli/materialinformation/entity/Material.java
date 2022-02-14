@@ -8,6 +8,10 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "MATERIAL", schema = "SWLI")
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "java_procedure_update_material",
+                procedureName = "SWLI.PR_UPDATE_MATERIAL")
+})
 public class Material implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -60,6 +60,8 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
 
         String status = "";
         try{
+            materialProviderRepository.procedureUpdateMaterialProvider();
+
             materialProviderDtoList = getListMaterialProvider();
 
             if(materialProviderDtoList.size() != 0){

@@ -60,7 +60,10 @@ public class MaterialServiceImpl implements MaterialService{
         String status = "";
 
         try{
+            materialRepository.procedureUpdatedMaterial();
+
             materialDtoList = getListMaterial();
+
             if(materialDtoList.size() != 0){
 
                 loginRequest.setUsername("serviciosweb");

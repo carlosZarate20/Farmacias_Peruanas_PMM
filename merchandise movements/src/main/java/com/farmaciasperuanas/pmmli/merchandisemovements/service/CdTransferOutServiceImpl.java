@@ -67,7 +67,7 @@ public class CdTransferOutServiceImpl implements CdTransferOutService {
                 cdTransferOut.setCarrierName(dto.getCarrierName().isEmpty() ? null : dto.getCarrierName());
                 cdTransferOut.setCartonNumber(dto.getCartonNumber().isEmpty() ? null : dto.getCartonNumber());
                 cdTransferOut.setPrdLvlNumber(dto.getPrdLvlNumber());
-                cdTransferOut.setJdaOrigin(Constants.JDA_ORIGIN);
+                cdTransferOut.setJdaOrigin(Constants.JDA_ORIGIN_OUT);
                 cdTransferOut.setTrfReasonCode(dto.getTrfReasonCode());
                 cdTransferOut.setFromLoc(Constants.FROM_LOC);
                 cdTransferOut.setToLoc(dto.getToLoc());

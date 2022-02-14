@@ -8,6 +8,10 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "VOLUMETRIC_DATA", schema = "SWLI")
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(name = "java_procedure_update_volumetric_data",
+                procedureName = "SWLI.PR_VOLUMETRIC_DATA")
+})
 public class VolumetricData implements Serializable {
     private static final long serialVersionUID = 1L;
 

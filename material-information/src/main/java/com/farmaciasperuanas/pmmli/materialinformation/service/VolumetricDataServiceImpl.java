@@ -60,6 +60,8 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
 
         String status = "";
         try {
+            volumetricDataRepository.procedureUpdatedVolumetricData();
+
             volumetricDataDtoList = getListVolumetricData();
             if (volumetricDataDtoList.size() != 0) {
                 loginRequest.setUsername("serviciosweb");

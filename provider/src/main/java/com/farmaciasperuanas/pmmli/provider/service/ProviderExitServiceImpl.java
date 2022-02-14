@@ -74,7 +74,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 providerExit.setActionCode(Constants.ACTION_CODE);
                 providerExit.setRtvPriorId(providerExitDto.getRtvPriorId());
                 providerExit.setQuantity((double) providerExitDto.getQuantity());
-                providerExit.setDateCreated(dateCreate);
+                providerExit.setDateCreated(new Date());
                 String prdLvlNumber = providerExitDto.getPrdLvlNumber();
                 Integer innerPackId = providerExitRepository.getInnerPackProcedure(prdLvlNumber);
                 providerExit.setInnerPackId(innerPackId);
