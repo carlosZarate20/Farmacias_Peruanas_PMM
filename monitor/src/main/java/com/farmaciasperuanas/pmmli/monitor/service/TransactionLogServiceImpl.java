@@ -11,9 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -237,6 +242,27 @@ public class TransactionLogServiceImpl implements TransactionLogService{
 //                "29/01/2022", "F", "MP", -1, -1, 1, offsetLimitRequest);
 
         return response;
+    }
+
+    @Override
+    public List<PolarChartInfoDto> lastSixMonthsTransactions() {
+        List<PolarChartInfoDto> res = new ArrayList<>();
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        try {
+            for (int i = 5; i >= 0; i--) {
+                LocalDate monthAgo = LocalDate.now().minusMonths(i).atTime(0, 0).with(TemporalAdjusters.firstDayOfMonth()).toLocalDate();
+                LocalDate monthAgoEnd = LocalDate.now().minusMonths(i).atTime(0, 0).with(TemporalAdjusters.lastDayOfMonth()).toLocalDate();
+
+                Date init = Date.from(monthAgo.atStartOfDay(defaultZoneId).toInstant());
+                Date end = Date.from(monthAgoEnd.atStartOfDay(defaultZoneId).toInstant());
+                Integer total = transactionLogRepository.getTotalByMonths(init,end);
+
+                res.add(new PolarChartInfoDto(monthAgo.format(DateTimeFormatter.ofPattern("MM/yyyy")), total));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return res;
     }
 
     private Date getCurrentDate() {

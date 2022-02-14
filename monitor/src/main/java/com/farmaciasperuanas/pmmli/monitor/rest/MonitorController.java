@@ -220,4 +220,10 @@ public class MonitorController {
     public ResponseDto<String> saveConfig(@RequestBody ConfigMonitorSaveDto dto) {
         return configService.saveConfig(dto.getId(),dto.getEmail());
     }
+
+    @GetMapping("/polarChartTransactions")
+    public List<PolarChartInfoDto> lastSixMonthsTransactions() {
+        return transactionLogService.lastSixMonthsTransactions();
+    }
+
 }

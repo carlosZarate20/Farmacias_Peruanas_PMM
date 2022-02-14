@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -116,13 +117,13 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "order by DATE_TRANSACTION desc",
             nativeQuery = true)
     List<TransactionLog> getTransactionLogFilter(@Param("intiDate") String intiDate,
-                                           @Param("finalDate") String finalDate,
-                                           @Param("state") String state,
-                                           @Param("codeTransaction") String codeTransaction,
-                                           @Param("validateDate") Integer validateDate,
-                                           @Param("validateTransaction") Integer validateTransaction,
-                                           @Param("validateState") Integer validateState,
-                                           Pageable pageable);
+                                                 @Param("finalDate") String finalDate,
+                                                 @Param("state") String state,
+                                                 @Param("codeTransaction") String codeTransaction,
+                                                 @Param("validateDate") Integer validateDate,
+                                                 @Param("validateTransaction") Integer validateTransaction,
+                                                 @Param("validateState") Integer validateState,
+                                                 Pageable pageable);
 
     @Query(value = "SELECT COUNT(*)" +
             "FROM SWLI.TRANSACTION_LOG  " +
@@ -131,10 +132,13 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
             "and ((:validateTransaction = -1) OR ((:validateTransaction <> -1) and (CODE_TRANSACTION = :codeTransaction)))",
             nativeQuery = true)
     Integer getTransactionLogFilterCount(@Param("intiDate") String intiDate,
-                                                 @Param("finalDate") String finalDate,
-                                                 @Param("state") String state,
-                                                 @Param("codeTransaction") String codeTransaction,
-                                                 @Param("validateDate") Integer validateDate,
-                                                 @Param("validateTransaction") Integer validateTransaction,
-                                                 @Param("validateState") Integer validateState);
+                                         @Param("finalDate") String finalDate,
+                                         @Param("state") String state,
+                                         @Param("codeTransaction") String codeTransaction,
+                                         @Param("validateDate") Integer validateDate,
+                                         @Param("validateTransaction") Integer validateTransaction,
+                                         @Param("validateState") Integer validateState);
+
+    @Query(" SELECT COUNT(tl.idTransacctionLog) from TransactionLog tl where tl.dateTransaction between :init and :end")
+    Integer getTotalByMonths(@Param("init") Date init, @Param("end") Date end);
 }

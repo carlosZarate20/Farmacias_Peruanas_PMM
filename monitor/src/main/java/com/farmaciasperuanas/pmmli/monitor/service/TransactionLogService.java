@@ -18,4 +18,6 @@ public interface TransactionLogService {
     List<ErrorTypeDto> getListError();
 
     DataTableDto<TransactionLogDto> listarTransactionLog(TransactionLogRequestDto transactionLogRequestDto);
+
+    List<PolarChartInfoDto> lastSixMonthsTransactions();
 }
