@@ -7,6 +7,7 @@ import com.farmaciasperuanas.pmmli.monitor.dto.ResponseMasterTransactionDto;
 import com.farmaciasperuanas.pmmli.monitor.repository.ConfigMonitorRepository;
 import com.farmaciasperuanas.pmmli.monitor.util.Constants;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +87,7 @@ public class EndpointServiceImpl implements EndpointService {
 
             httpUrlConnection.disconnect();
             if (!responseDto.isStatus()) {
-                String subject = "[PMM-LI] ERROR EN EL ENVIO DE MAESTRO " + master;
+                String subject = "[PMM-LI] ERROR EN EL ENVIO DE MAESTRO " + master + " - "+ StringUtils.leftPad("" + responseDto.getBody().getId(), 6, "0");
                 String newBody = "<html><head>" +
                         "<style>table { border-collapse: collapse;} table, td, th { border: 1px solid black; padding: 5px;}</style>"
                         + "</head><body><p>";

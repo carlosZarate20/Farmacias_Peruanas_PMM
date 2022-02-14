@@ -108,6 +108,37 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = materialProviderDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
+                        "MMP", "Data Maestra",
+                        status, input, responseBody, null);
+
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for(MaterialProviderDto materialProviderDto : materialProviderDtoList){
+                    boolean valid = positionsError.contains(materialProviderDtoList.indexOf(materialProviderDto));
+                    if(!valid) {
+                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka(),materialProviderDto.getCodigoProveedor());
+                    }
+                }
+                responseApi.setId(tl.getIdTransacctionLog());
+
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 //                    for(MaterialProviderDto materialProviderDto: materialProviderDtoList){
 //                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka());
@@ -127,29 +158,7 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
 
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(materialProviderDtoList);
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
-                        "MMP", "Data Maestra",
-                        status, input, responseBody);
 
-                for(ResponseApiErrorItem res : responseApi.getErrors()){
-                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
-                }
-
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-
-                for(MaterialProviderDto materialProviderDto : materialProviderDtoList){
-                    boolean valid = positionsError.contains(materialProviderDtoList.indexOf(materialProviderDto));
-                    if(!valid) {
-                        materialProviderRepository.updateMaterialProvider(materialProviderDto.getMaterialInka(),materialProviderDto.getCodigoProveedor());
-                    }
-                }
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

@@ -119,7 +119,7 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_MERCHANDISE_TRANSFER,
-                        "T", "MT", "Transaccion" ,status , requestBody , responseBody);
+                        "T", "MT", "Transaccion" ,status , requestBody , responseBody,transSession);
 
                 for(ErrorsDto errorsDto: errorsDtoList){
                     transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
@@ -134,7 +134,7 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_MERCHANDISE_TRANSFER,
-                        "T", "MT", "Transaccion",status, requestBody, responseBody);
+                        "T", "MT", "Transaccion",status, requestBody, responseBody,transSession);
             }
 
         } catch (Exception e){

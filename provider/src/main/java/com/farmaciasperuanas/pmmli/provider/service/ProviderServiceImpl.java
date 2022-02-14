@@ -107,6 +107,35 @@ public class ProviderServiceImpl implements ProviderService {
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = providerDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Provider", "M",
+                        "MP", "Data Maestra",
+                        status, input, responseBody, null);
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for(ProviderDto providerDto : providerDtoList){
+                    boolean valid = positionsError.contains(providerDtoList.indexOf(providerDto));
+                    if(!valid) {
+                        providerRepository.updateProvider(providerDto.getCodigoSap());
+                    }
+                }
+
+                responseApi.setId(tl.getIdTransacctionLog());
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
 //                    for(ProviderDto providerDto: providerDtoList)
@@ -129,27 +158,7 @@ public class ProviderServiceImpl implements ProviderService {
 
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(providerDtoList);
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Provider", "M",
-                        "MP", "Data Maestra",
-                        status, input, responseBody);
-                for(ResponseApiErrorItem res : responseApi.getErrors()){
-                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
-                }
 
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-                for(ProviderDto providerDto : providerDtoList){
-                    boolean valid = positionsError.contains(providerDtoList.indexOf(providerDto));
-                    if(!valid) {
-                        providerRepository.updateProvider(providerDto.getCodigoSap());
-                    }
-                }
 
             } else{
                 responseDto.setCode(HttpStatus.OK.value());

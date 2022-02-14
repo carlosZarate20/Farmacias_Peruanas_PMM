@@ -13,5 +13,6 @@ import java.util.List;
 @Builder
 public class ResponseApi{
     private String code;
+    private Long id;
     private List<ResponseApiErrorItem> errors;
 }

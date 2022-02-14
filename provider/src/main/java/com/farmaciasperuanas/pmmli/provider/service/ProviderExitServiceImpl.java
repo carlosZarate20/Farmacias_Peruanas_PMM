@@ -121,7 +121,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
-                        "T", "PE", "Transaccion" ,status , requestBody , responseBody);
+                        "T", "PE", "Transaccion" ,status , requestBody , responseBody, sessionNumber);
 
                 for(ErrorsDto errorsDto: errorsDtoList){
                     transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
@@ -137,7 +137,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
-                        "T", "PE", "Transaccion",status, requestBody, responseBody);
+                        "T", "PE", "Transaccion",status, requestBody, responseBody, sessionNumber);
             }
         } catch(Exception e){
             e.printStackTrace();

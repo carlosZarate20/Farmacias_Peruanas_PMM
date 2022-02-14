@@ -102,6 +102,36 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = volumetricDataDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
+                        "MVD", "Data Maestra",
+                        status, input, responseBody, null);
+
+                for (ResponseApiErrorItem res : responseApi.getErrors()) {
+                    transactionLogErrorService.saveTransactionLogError(tl, res.getPk(), res.getMessage());
+                }
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for (VolumetricDataDto volumetricDataDto : volumetricDataDtoList) {
+                    boolean valid = positionsError.contains(volumetricDataDtoList.indexOf(volumetricDataDto));
+                    if (!valid) {
+                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial(), volumetricDataDto.getUma());
+                    }
+                }
+                responseApi.setId(tl.getIdTransacctionLog());
+
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
 //                    for(VolumetricDataDto volumetricDataDto: volumetricDataDtoList){
 //                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial());
@@ -121,28 +151,7 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
 
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(volumetricDataDtoList);
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Volumetric Data", "M",
-                        "MVD", "Data Maestra",
-                        status, input, responseBody);
 
-                for (ResponseApiErrorItem res : responseApi.getErrors()) {
-                    transactionLogErrorService.saveTransactionLogError(tl, res.getPk(), res.getMessage());
-                }
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-
-                for (VolumetricDataDto volumetricDataDto : volumetricDataDtoList) {
-                    boolean valid = positionsError.contains(volumetricDataDtoList.indexOf(volumetricDataDto));
-                    if (!valid) {
-                        volumetricDataRepository.updateVolumetricData(volumetricDataDto.getMaterial(), volumetricDataDto.getUma());
-                    }
-                }
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

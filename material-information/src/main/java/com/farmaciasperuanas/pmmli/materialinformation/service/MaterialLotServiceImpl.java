@@ -107,6 +107,39 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = materialLotDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Lot", "M",
+                        "MML", "Data Maestra",
+                        status, input, responseBody, null);
+
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for (MaterialLotDto materialLotDto : materialLotDtoList) {
+                    boolean valid = positionsError.contains(materialLotDtoList.indexOf(materialLotDto));
+                    if(!valid) {
+                        materialLotRepository.updateMaterialLot(materialLotDto.getMaterial(),materialLotDto.getLote());
+                    }
+                }
+
+                responseApi.setId(tl.getIdTransacctionLog());
+
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
 //                    for(MaterialLotDto materialLotDto: materialLotDtoList){
@@ -127,29 +160,6 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                 }
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(materialLotDtoList);
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Lot", "M",
-                        "MML", "Data Maestra",
-                        status, input, responseBody);
-
-                for(ResponseApiErrorItem res : responseApi.getErrors()){
-                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
-                }
-
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-                for (MaterialLotDto materialLotDto : materialLotDtoList) {
-                    boolean valid = positionsError.contains(materialLotDtoList.indexOf(materialLotDto));
-                    if(!valid) {
-                        materialLotRepository.updateMaterialLot(materialLotDto.getMaterial(),materialLotDto.getLote());
-                    }
-                }
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class StoreServiceImpl implements StoreService{
+public class StoreServiceImpl implements StoreService {
 
     private static final Logger LOGGER = LogManager.getLogger(StoreServiceImpl.class);
 
@@ -61,10 +61,10 @@ public class StoreServiceImpl implements StoreService{
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
-        try{
+        try {
             storeDtoList = getListStore();
 
-            if(storeDtoList.size() != 0){
+            if (storeDtoList.size() != 0) {
                 loginRequest.setUsername("serviciosweb");
                 loginRequest.setPassword("Brainbox2021");
                 authTokenHeader = loginService.iniciarSession(loginRequest);
@@ -98,7 +98,7 @@ public class StoreServiceImpl implements StoreService{
                 String outPut;
                 StringBuilder sb = new StringBuilder();
 
-                while((outPut = br.readLine()) != null) {
+                while ((outPut = br.readLine()) != null) {
                     LOGGER.debug(outPut);
                     sb.append(outPut);
                 }
@@ -106,11 +106,41 @@ public class StoreServiceImpl implements StoreService{
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
-                if(responseApi.getCode().equalsIgnoreCase("ok")){
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = storeDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Store", "M",
+                        "MS", "Data Maestra",
+                        status, input, responseBody, null);
+                for (ResponseApiErrorItem res : responseApi.getErrors()) {
+                    transactionLogErrorService.saveTransactionLogError(tl, res.getPk(), res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+                for (StoreDto storeDto : storeDtoList) {
+                    boolean valid = positionsError.contains(storeDtoList.indexOf(storeDto));
+                    if (!valid) {
+                        storeRepository.updateStore(storeDto.getCodigo());
+                    }
+                }
+
+                responseApi.setId(tl.getIdTransacctionLog());
+
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
 //                    for(StoreDto storeDto: storeDtoList){
 //                        storeRepository.updateStore(storeDto.getCodigo());
 //                    }
-                    status = "C";
+
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
@@ -125,28 +155,6 @@ public class StoreServiceImpl implements StoreService{
 
 //                responseBody = String.valueOf(responseApi);
 //                String responseBody = "";
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Store", "M",
-                        "MS", "Data Maestra",
-                        status, input, responseBody);
-                for(ResponseApiErrorItem res : responseApi.getErrors()){
-                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
-                }
-
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-                for(StoreDto storeDto : storeDtoList){
-                    boolean valid = positionsError.contains(storeDtoList.indexOf(storeDto));
-                    if(!valid) {
-                        storeRepository.updateStore(storeDto.getCodigo());
-                    }
-                }
 
 
             } else {
@@ -156,19 +164,19 @@ public class StoreServiceImpl implements StoreService{
                 responseDto.setMessage("No existen registros en la tabla SWLI.STORE");
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return responseDto;
     }
 
-    private List<StoreDto> getListStore(){
+    private List<StoreDto> getListStore() {
         List<StoreDto> storeDtoList = new ArrayList<>();
         List<Store> storeList = new ArrayList<>();
 
         storeList = storeRepository.getListStore();
 
-        for(Store store : storeList){
+        for (Store store : storeList) {
             StoreDto storeDto = new StoreDto();
             storeDto.setCalleNumero(store.getStreet());
             storeDto.setCodigo(store.getCode());

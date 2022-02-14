@@ -120,7 +120,7 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_INVENTORY_ADJUSTMENT,
-                        "T", "IA", "Transaccion" ,status , requestBody , responseBody);
+                        "T", "IA", "Transaccion" ,status , requestBody , responseBody,transSession);
 
                 for(ErrorsDto errorsDto: errorsDtoList){
                     transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
@@ -135,7 +135,7 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_INVENTORY_ADJUSTMENT,
-                        "T", "IA", "Transaccion",status, requestBody, responseBody);
+                        "T", "IA", "Transaccion",status, requestBody, responseBody,transSession);
             }
 
         } catch (Exception e){

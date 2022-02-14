@@ -18,6 +18,9 @@ public class TransactionLog {
     @Column(name = "NAME_TRANSACTION")
     private String nameTransaction;
 
+    @Column(name = "SESSION_NUMBER")
+    private Integer sessionNumber;
+
     @Column(name = "CODE")
     private String code;
 

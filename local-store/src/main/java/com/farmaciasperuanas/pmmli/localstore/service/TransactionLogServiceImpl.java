@@ -16,7 +16,7 @@ public class TransactionLogServiceImpl implements TransactionLogService {
     private TransactionLogRepository transactionLogRepository;
 
     @Override
-    public TransactionLog saveTransactionLog(String nameTransaction, String codeOp, String codeTransaction, String typeTransaction, String status, String requestBody, String responseBody) {
+    public TransactionLog saveTransactionLog(String nameTransaction, String codeOp, String codeTransaction, String typeTransaction, String status, String requestBody, String responseBody,Integer sessionNumber) {
         Integer cantTransaction = 0;
         String state = "";
         String dateTransaction = "";
@@ -45,6 +45,7 @@ public class TransactionLogServiceImpl implements TransactionLogService {
             tl.setState(status);
             tl.setCode(codeOp);
             tl.setCodeTransaction(codeTransaction);
+            tl.setSessionNumber(sessionNumber);
             TransactionLog saved = transactionLogRepository.save(tl);
 
             return saved;

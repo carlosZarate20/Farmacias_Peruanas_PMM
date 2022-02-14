@@ -113,6 +113,38 @@ public class BarcodeServiceImpl implements BarcodeService{
                 responseApi = GSON.fromJson(sb.toString(), ResponseApi.class);
                 httpUrlConnection.disconnect();
 
+                try {
+                    responseBody = mapper.writeValueAsString(responseApi);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+
+                if (responseApi.getCode().equalsIgnoreCase("ok")) {
+                    status = "C";
+                } else {
+                    status = listBarcode.size() == responseApi.getErrors().size() ? "F" : "FP";
+                }
+
+                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Barcode", "M",
+                        "MB", "Data Maestra",
+                        status, input, responseBody,null);
+
+                for(ResponseApiErrorItem res : responseApi.getErrors()){
+                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
+                }
+
+                List<Integer> positionsError = responseApi.getErrors().stream()
+                        .map(ResponseApiErrorItem::getPosition)
+                        .collect(Collectors.toList());
+
+                for (BarcodeDto barcodeDto : listBarcode) {
+                    boolean valid = positionsError.contains(listBarcode.indexOf(barcodeDto));
+                    if(!valid) {
+                        barcodeRepository.updateBarcode(barcodeDto.getMaterial(),barcodeDto.getUm());
+                    }
+                }
+
+                responseApi.setId(tl.getIdTransacctionLog());
                 if(responseApi.getCode().equalsIgnoreCase("ok")){
 
 //                    for(BarcodeDto barcodeDto: listBarcode){
@@ -133,29 +165,7 @@ public class BarcodeServiceImpl implements BarcodeService{
 
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(listBarcode);
-                try {
-                    responseBody = mapper.writeValueAsString(responseApi);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Barcode", "M",
-                        "MB", "Data Maestra",
-                        status, input, responseBody);
 
-                for(ResponseApiErrorItem res : responseApi.getErrors()){
-                    transactionLogErrorService.saveTransactionLogError(tl,res.getPk(),res.getMessage());
-                }
-
-                List<Integer> positionsError = responseApi.getErrors().stream()
-                        .map(ResponseApiErrorItem::getPosition)
-                        .collect(Collectors.toList());
-
-                for (BarcodeDto barcodeDto : listBarcode) {
-                    boolean valid = positionsError.contains(listBarcode.indexOf(barcodeDto));
-                    if(!valid) {
-                        barcodeRepository.updateBarcode(barcodeDto.getMaterial(),barcodeDto.getUm());
-                    }
-                }
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);

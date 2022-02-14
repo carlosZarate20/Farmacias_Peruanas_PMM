@@ -113,7 +113,7 @@ public class LocalReturnServiceImpl implements LocalReturnService{
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 TransactionLog tl = transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
-                        "T", "LR", "Transaccion" ,status , requestBody , responseBody);
+                        "T", "LR", "Transaccion" ,status , requestBody , responseBody, sessionNumber);
 
                 for(ErrorsDto errorsDto: errorsDtoList){
                     transactionLogErrorService.saveTransactionLogError(tl,errorsDto.getIdentifier(),errorsDto.getMessage());
@@ -129,7 +129,7 @@ public class LocalReturnServiceImpl implements LocalReturnService{
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION,
-                        "T", "LR", "Transaccion",status, requestBody, responseBody);
+                        "T", "LR", "Transaccion",status, requestBody, responseBody, sessionNumber);
             }
 
         } catch (Exception e){
