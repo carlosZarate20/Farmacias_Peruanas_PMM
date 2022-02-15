@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,7 +123,7 @@ public class UserAccessServiceImpl implements UserAccessService {
         ResponseDto<UserAccess> res = new ResponseDto<>();
         try {
             Optional<UserAccess> u = userAccessRepository.findById(id);
-            if(u.isPresent()){
+            if (u.isPresent()) {
                 UserAccess finded = u.get();
                 finded.setUsername(username);
                 finded.setName(name);
@@ -146,5 +147,10 @@ public class UserAccessServiceImpl implements UserAccessService {
         }
 
         return res;
+    }
+
+    @Override
+    public UserAccess getInfo(HttpServletRequest req) {
+        return userAccessRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }
 }

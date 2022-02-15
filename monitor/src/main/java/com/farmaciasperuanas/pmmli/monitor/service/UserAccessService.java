@@ -8,6 +8,8 @@ import com.farmaciasperuanas.pmmli.monitor.dto.user.UserListRequestDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.user.UserSignInResponseDTO;
 import com.farmaciasperuanas.pmmli.monitor.entity.UserAccess;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface UserAccessService {
     ResponseDto<UserAccess> saveUser(String username,String name, String email, Long profileId);
 
@@ -18,5 +20,7 @@ public interface UserAccessService {
     UserAccess getUser(Long id);
 
     ResponseDto<UserAccess> updateUser(Long id,String username,String name, String email, Long profileId,Long state);
+
+    UserAccess getInfo(HttpServletRequest req);
 
 }

@@ -4,7 +4,7 @@ security:
   jwt:
     token:
       secret-key: secret-key.
-      expire-length: 864000000
+      expire-length: 7200000
 spring:
   mail:
     host: smtp.gmail.com
