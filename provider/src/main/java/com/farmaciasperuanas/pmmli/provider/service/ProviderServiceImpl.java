@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -43,11 +44,14 @@ public class ProviderServiceImpl implements ProviderService {
     @Autowired
     private TransactionLogErrorService transactionLogErrorService;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public ResponseDto registrarProveedorLi() {
 
         ResponseDto responseDto = new ResponseDto();
-        String urlString = "https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_provider";
+        String urlString = env.getProperty("application.url-provider");
 
         List<ProviderDto> providerDtoList = new ArrayList<>();
         ResponseApi responseApi = new ResponseApi();
@@ -61,8 +65,8 @@ public class ProviderServiceImpl implements ProviderService {
             providerDtoList = getListProvider();
 
             if(providerDtoList.size() != 0){
-                loginRequest.setUsername("serviciosweb");
-                loginRequest.setPassword("Brainbox2021");
+                loginRequest.setUsername(env.getProperty("application.username"));
+                loginRequest.setPassword(env.getProperty("application.password"));
                 authTokenHeader = loginService.iniciarSession(loginRequest);
 
                 URL url = new URL(urlString);

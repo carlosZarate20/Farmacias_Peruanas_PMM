@@ -23,5 +23,9 @@ spring:
         ddl-auto: created
         database-platform: org.hibernate.dialect.Oracle10gDialect
         use-new-id-generator-mappings: false
-    application:
-      url-session: https://dev-logisticainversa.solucionesfps.pe/users/signin
+application:
+  url-session: https://dev-logisticainversa.solucionesfps.pe/users/signin
+  url-provider: https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_provider
+  url_material_provider: https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_material_provider
+  username: serviciosweb
+  password: Brainbox2021

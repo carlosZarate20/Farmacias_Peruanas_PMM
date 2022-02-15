@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,9 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
     @Autowired
     private TransactionLogErrorService transactionLogErrorService;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public ResponseDto enviarDataVolumetrica() {
 
@@ -50,7 +54,7 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
         ResponseDto responseDto = new ResponseDto();
         ResponseApi responseApi = new ResponseApi();
 
-        String urlString = "https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_barcode";
+        String urlString = env.getProperty("application.url_volumetric_data");
 
         String responseBody = "";
         String requestBody = "";
@@ -64,8 +68,8 @@ public class VolumetricDataServiceImpl implements VolumetricDataService {
 
             volumetricDataDtoList = getListVolumetricData();
             if (volumetricDataDtoList.size() != 0) {
-                loginRequest.setUsername("serviciosweb");
-                loginRequest.setPassword("Brainbox2021");
+                loginRequest.setUsername(env.getProperty("application.username"));
+                loginRequest.setPassword(env.getProperty("application.password"));
                 authTokenHeader = loginService.iniciarSession(loginRequest);
 
                 URL url = new URL(urlString);

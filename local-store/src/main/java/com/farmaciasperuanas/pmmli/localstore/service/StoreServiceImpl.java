@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,9 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     private TransactionLogErrorService transactionLogErrorService;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public ResponseDto enviarTienda() {
 
@@ -53,7 +57,7 @@ public class StoreServiceImpl implements StoreService {
 
         ResponseDto responseDto = new ResponseDto();
         ResponseApi responseApi = new ResponseApi();
-        String urlString = "https://dev-logisticainversa.solucionesfps.pe/master_table/load_master_store";
+        String urlString = env.getProperty("application.url-store");
         String responseBody = "";
         String requestBody = "";
 
@@ -67,8 +71,8 @@ public class StoreServiceImpl implements StoreService {
             storeDtoList = getListStore();
 
             if (storeDtoList.size() != 0) {
-                loginRequest.setUsername("serviciosweb");
-                loginRequest.setPassword("Brainbox2021");
+                loginRequest.setUsername(env.getProperty("application.username"));
+                loginRequest.setPassword(env.getProperty("application.password"));
                 authTokenHeader = loginService.iniciarSession(loginRequest);
 
                 URL url = new URL(urlString);

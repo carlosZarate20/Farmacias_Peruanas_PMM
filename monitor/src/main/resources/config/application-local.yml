@@ -39,5 +39,14 @@ spring:
         database-platform: org.hibernate.dialect.Oracle10gDialect
         use-new-id-generator-mappings: false
 
-    application:
-      name: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+application:
+  name: fps-expc-ms-com.farmaciasperuanas.pmmli.monitor-monitor
+  url_proveedores: http://localhost:8080/enviarProveedor
+  url_material_proveedor: http://localhost:8080/enviarMaterialProvider
+  url_material: http://localhost:8081/enviarMaterial
+  url_material_lot: http://localhost:8081/enviarMaterialLot
+  url_datos_volumetricos: http://localhost:8081/enviarDataVolumetrica
+  url_barcode: http://localhost:8081/enviarCodigoBarra
+  url_tiendas: http://localhost:8082/enviarStore
+  user:
+    webservice: Basic d2Vic2VydmljZTpTV0xJMjAyMg==

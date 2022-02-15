@@ -1,18 +1,17 @@
 package com.farmaciasperuanas.pmmli.monitor.service;
 
-import com.farmaciasperuanas.pmmli.monitor.dto.ResponseApi;
 import com.farmaciasperuanas.pmmli.monitor.dto.ResponseApiErrorItem;
-import com.farmaciasperuanas.pmmli.monitor.dto.ResponseDto;
 import com.farmaciasperuanas.pmmli.monitor.dto.ResponseMasterTransactionDto;
 import com.farmaciasperuanas.pmmli.monitor.repository.ConfigMonitorRepository;
 import com.farmaciasperuanas.pmmli.monitor.util.Constants;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -32,6 +31,9 @@ public class EndpointServiceImpl implements EndpointService {
     @Autowired
     ConfigMonitorRepository configMonitorRepository;
 
+    @Autowired
+    private Environment env;
+
     @Override
     public ResponseMasterTransactionDto ejecutarProceso(String typeOp) {
 
@@ -40,25 +42,25 @@ public class EndpointServiceImpl implements EndpointService {
         String master = "";
         try {
             if (typeOp.equalsIgnoreCase(Constants.TYPE_PROVEEDORES)) {
-                urlString = Constants.URL_PROVEEDORES;
+                urlString = env.getProperty("application.url_proveedores");
                 master = "PROVEEDORES";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_BARCODE)) {
-                urlString = Constants.URL_BARCODE;
+                urlString = env.getProperty("application.url_barcode");
                 master = "CÓDIGOS DE BARRA";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_MATERIAL)) {
-                urlString = Constants.URL_MATERIAL;
+                urlString = env.getProperty("application.url_material");
                 master = "MATERIALES";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_TIENDAS)) {
-                urlString = Constants.URL_TIENDAS;
+                urlString = env.getProperty("application.url_tiendas");
                 master = "TIENDAS";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_DATOS_VOLUMETRICOS)) {
-                urlString = Constants.URL_DATOS_VOLUMETRICOS;
+                urlString = env.getProperty("application.url_datos_volumetricos");
                 master = "DATOS VOLUMÉTRICOS";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_MATERIAL_LOT)) {
-                urlString = Constants.URL_MATERIAL_LOT;
+                urlString = env.getProperty("application.url_material_lot");
                 master = "MATERIALES LOTE";
             } else if (typeOp.equalsIgnoreCase(Constants.TYPE_MATERIAL_PROVEEDOR)) {
-                urlString = Constants.URL_MATERIAL_PROVEEDOR;
+                urlString = env.getProperty("application.url_material_proveedor");
                 master = "MATERIALES PROVEEDOR";
             }
 
@@ -70,7 +72,7 @@ public class EndpointServiceImpl implements EndpointService {
             httpUrlConnection.setReadTimeout(30_000);
             httpUrlConnection.setDoInput(true);
             httpUrlConnection.setDoOutput(true);
-            httpUrlConnection.setRequestProperty("Authorization","Basic d2Vic2VydmljZTpTV0xJMjAyMg==");
+            httpUrlConnection.setRequestProperty("Authorization",env.getProperty("application.user.webservice"));
             httpUrlConnection.setRequestProperty("Content-Type", "application/json");
             httpUrlConnection.setRequestProperty("Accept", "application/json");
             httpUrlConnection.setRequestMethod("POST");

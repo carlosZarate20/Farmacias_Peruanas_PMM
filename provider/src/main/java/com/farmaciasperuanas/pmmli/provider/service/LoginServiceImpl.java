@@ -5,6 +5,8 @@ import com.farmaciasperuanas.pmmli.provider.dto.LoginResponse;
 import com.google.gson.Gson;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -23,12 +25,15 @@ public class LoginServiceImpl implements LoginService{
 
     private static final Gson GSON = new Gson();
 
+    @Autowired
+    private Environment env;
+
     @Override
     public String iniciarSession(LoginRequest loginRequest) {
 
         Properties props = new Properties();
         LoginResponse loginResponse = new LoginResponse();
-        String urlString = "https://dev-logisticainversa.solucionesfps.pe/users/signin";
+        String urlString = env.getProperty("application.url-session");
         String token = "";
         try{
             URL url = new URL(urlString);
