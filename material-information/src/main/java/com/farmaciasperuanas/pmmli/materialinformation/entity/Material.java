@@ -33,7 +33,7 @@ public class Material implements Serializable {
     private Double unitPrice;
 
     @Column(name = "CONTROL")
-    private String control;
+    private Integer control;
 
     @Column(name = "ASSORTMENT")
     private String assortment;

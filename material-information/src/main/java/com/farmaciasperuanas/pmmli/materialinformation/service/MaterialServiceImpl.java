@@ -187,11 +187,14 @@ public class MaterialServiceImpl implements MaterialService{
             materialDto.setControl(material.getControl());
             materialDto.setDescripcion(material.getDescription());
             materialDto.setFamilia(material.getFamily());
-            materialDto.setInka(material.getInka());
+            materialDto.setInka(material.getInka().trim());
             materialDto.setMifa(material.getMifa());
             materialDto.setPrecioUnitario(material.getUnitPrice());
             materialDto.setSurtido(material.getAssortment());
             materialDto.setZonaInduccion(material.getInductionZone());
+            materialDto.setCodigoFamilia(material.getFamilyCode());
+            materialDto.setCooled(material.getCooled());
+            materialDto.setInactive(material.getInactive());
 
             materialDtoList.add(materialDto);
         }

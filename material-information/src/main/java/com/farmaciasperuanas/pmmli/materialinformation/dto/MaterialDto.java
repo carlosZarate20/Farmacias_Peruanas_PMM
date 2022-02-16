@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MaterialDto {
 
-    private String control;
+    private Integer control;
     private String descripcion;
     private String descripcionGrupoArticulo;
     private String familia;
@@ -21,4 +21,7 @@ public class MaterialDto {
     private Double precioUnitario;
     private String surtido;
     private String zonaInduccion;
+    private String codigoFamilia;
+    private Integer cooled;
+    private Integer inactive;
 }
