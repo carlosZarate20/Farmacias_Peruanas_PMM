@@ -25,5 +25,5 @@ public interface MaterialRepository extends JpaRepository<Material, Long>, JpaSp
     void updateMaterial(@Param("inka") String inka);
 
     @Procedure(name = "java_procedure_update_material")
-    void procedureUpdatedMaterial();
+    void procedureUpdate();
 }

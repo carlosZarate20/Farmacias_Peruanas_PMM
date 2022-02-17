@@ -18,7 +18,7 @@ public class Material implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_MATERIAL")
-    private Integer idMaterial;
+    private Long idMaterial;
 
     @Column(name = "INKA")
     private String inka;

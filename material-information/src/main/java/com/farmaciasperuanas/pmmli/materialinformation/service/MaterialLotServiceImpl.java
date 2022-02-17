@@ -4,6 +4,7 @@ import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.MaterialLot;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.MaterialLotRepository;
+import com.farmaciasperuanas.pmmli.materialinformation.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -65,6 +66,8 @@ public class MaterialLotServiceImpl implements MaterialLotService{
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try{
             materialLotDtoList = getListMaterialLot();
 
@@ -119,8 +122,11 @@ public class MaterialLotServiceImpl implements MaterialLotService{
 
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = materialLotDtoList.size();
                 } else {
                     status = materialLotDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = materialLotDtoList.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
 
@@ -153,14 +159,14 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
 
                 } else {
                     status = materialLotDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio un error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 //                responseBody = String.valueOf(responseApi);
 //                requestBody = GSON.toJson(materialLotDtoList);
@@ -169,7 +175,7 @@ public class MaterialLotServiceImpl implements MaterialLotService{
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.MATERIAL_LOT");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
 
         } catch (Exception e){

@@ -19,7 +19,7 @@ public class Store implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_STORE")
-    private Integer idStore;
+    private Long idStore;
 
     @Column(name = "CODE")
     private String code;

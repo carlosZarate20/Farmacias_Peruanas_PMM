@@ -4,6 +4,7 @@ import com.farmaciasperuanas.pmmli.provider.dto.*;
 import com.farmaciasperuanas.pmmli.provider.entity.MaterialProvider;
 import com.farmaciasperuanas.pmmli.provider.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.provider.repository.MaterialProviderRepository;
+import com.farmaciasperuanas.pmmli.provider.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -63,6 +64,8 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try{
             materialProviderRepository.procedureUpdateMaterialProvider();
 
@@ -121,8 +124,11 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 }
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = materialProviderDtoList.size();
                 } else {
                     status = materialProviderDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = materialProviderDtoList.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material Provider", "M",
@@ -153,13 +159,13 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
                 } else {
                     status = materialProviderDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio un error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 
 //                responseBody = String.valueOf(responseApi);
@@ -170,7 +176,7 @@ public class MaterialProviderServiceImpl implements MaterialProviderService{
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.MATERIAL_PROVIDER");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
         } catch(Exception e){
             responseDto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

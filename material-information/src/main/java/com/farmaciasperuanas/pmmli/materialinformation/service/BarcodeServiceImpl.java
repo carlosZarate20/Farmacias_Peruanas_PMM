@@ -4,6 +4,7 @@ import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.Barcode;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.BarcodeRepository;
+import com.farmaciasperuanas.pmmli.materialinformation.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -65,6 +66,8 @@ public class BarcodeServiceImpl implements BarcodeService{
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try {
             listBarcode = getListBarcode();
             if(listBarcode.size() != 0){
@@ -125,8 +128,11 @@ public class BarcodeServiceImpl implements BarcodeService{
 
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = listBarcode.size();
                 } else {
                     status = listBarcode.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = listBarcode.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Barcode", "M",
@@ -158,13 +164,13 @@ public class BarcodeServiceImpl implements BarcodeService{
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
                 } else {
                     status =  listBarcode.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 
 //                responseBody = String.valueOf(responseApi);
@@ -174,7 +180,7 @@ public class BarcodeServiceImpl implements BarcodeService{
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.BARCODE");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
 
 

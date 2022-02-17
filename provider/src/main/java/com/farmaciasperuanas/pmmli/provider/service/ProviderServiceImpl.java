@@ -4,6 +4,7 @@ import com.farmaciasperuanas.pmmli.provider.dto.*;
 import com.farmaciasperuanas.pmmli.provider.entity.Provider;
 import com.farmaciasperuanas.pmmli.provider.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.provider.repository.ProviderRepository;
+import com.farmaciasperuanas.pmmli.provider.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -60,6 +61,8 @@ public class ProviderServiceImpl implements ProviderService {
         String authTokenHeader = "";
         LoginRequest loginRequest = new LoginRequest();
         String status = "";
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try {
             //Traer datos para insertar a LI
             providerDtoList = getListProvider();
@@ -118,8 +121,11 @@ public class ProviderServiceImpl implements ProviderService {
                 }
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = providerDtoList.size();
                 } else {
                     status = providerDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = providerDtoList.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Provider", "M",
@@ -147,17 +153,17 @@ public class ProviderServiceImpl implements ProviderService {
 //                        providerRepository.updateProvider(providerDto.getCodigoSap());
 //                    }
 
-                    status = "C";
+//                    status = "C";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Envio Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
                 } else {
-                    status = providerDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+//                    status = providerDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio un error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 
 //                responseBody = String.valueOf(responseApi);
@@ -168,7 +174,7 @@ public class ProviderServiceImpl implements ProviderService {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.PROVIDER");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
 
         }catch (Exception e){

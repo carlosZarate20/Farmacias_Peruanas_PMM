@@ -4,6 +4,7 @@ import com.farmaciasperuanas.pmmli.materialinformation.dto.*;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.Material;
 import com.farmaciasperuanas.pmmli.materialinformation.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.materialinformation.repository.MaterialRepository;
+import com.farmaciasperuanas.pmmli.materialinformation.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -62,9 +63,10 @@ public class MaterialServiceImpl implements MaterialService{
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
-
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try{
-            materialRepository.procedureUpdatedMaterial();
+            materialRepository.procedureUpdate();
 
             materialDtoList = getListMaterial();
 
@@ -118,8 +120,11 @@ public class MaterialServiceImpl implements MaterialService{
                 }
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = materialDtoList.size();
                 } else {
                     status = materialDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = materialDtoList.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Material", "M",
@@ -134,7 +139,7 @@ public class MaterialServiceImpl implements MaterialService{
                 for (MaterialDto materialDto : materialDtoList) {
                     boolean valid = positionsError.contains(materialDtoList.indexOf(materialDto));
                     if(!valid) {
-                        materialRepository.updateMaterial(materialDto.getInka());
+                        materialRepository.updateMaterial(materialDto.getInka().trim());
                     }
 
                 }
@@ -149,13 +154,13 @@ public class MaterialServiceImpl implements MaterialService{
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
                 } else {
                     status = materialDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio un error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 
 //                responseBody = String.valueOf(responseDto);
@@ -165,7 +170,7 @@ public class MaterialServiceImpl implements MaterialService{
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.MATERIAL");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
 
         } catch (Exception e){

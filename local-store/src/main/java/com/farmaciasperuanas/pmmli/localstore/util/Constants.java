@@ -11,4 +11,7 @@ public class Constants {
     public static final String MESSAGE_FALLO_TOTAL_TRANSACTION = "Envio Fallido Total";
     public static final String MESSAGE_FALLO_PARCIAL_TRANSACTION = "Envio Fallido Parcial";
     public static final String TRF_QTY_FLAG   = "P";
+    public static final String MESSAGE_OK_MAESTRO = "Los datos se enviaron correctamente. ";
+    public static final String MESSAGE_FALLO_MAESTRO = "Se encontraron errores durante el envio de datos. ";
+    public static final String MESSAGE_NOT_DATA_LIST = "Los datos ya se encuentran actualizados. Se enviaron 0  registros";
 }

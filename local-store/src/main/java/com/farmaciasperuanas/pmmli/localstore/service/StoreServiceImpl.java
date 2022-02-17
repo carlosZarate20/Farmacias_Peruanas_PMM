@@ -5,6 +5,7 @@ import com.farmaciasperuanas.pmmli.localstore.entity.Store;
 import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLog;
 import com.farmaciasperuanas.pmmli.localstore.entity.TransactionLogError;
 import com.farmaciasperuanas.pmmli.localstore.repository.StoreRepository;
+import com.farmaciasperuanas.pmmli.localstore.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -65,6 +66,8 @@ public class StoreServiceImpl implements StoreService {
         LoginRequest loginRequest = new LoginRequest();
 
         String status = "";
+        Integer errosCount = 0;
+        Integer okCount = 0;
         try {
             storeRepository.procedureUpdate();
 
@@ -119,8 +122,11 @@ public class StoreServiceImpl implements StoreService {
                 }
                 if (responseApi.getCode().equalsIgnoreCase("ok")) {
                     status = "C";
+                    okCount = storeDtoList.size();
                 } else {
                     status = storeDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
+                    okCount = storeDtoList.size();
+                    errosCount = responseApi.getErrors().size();
                 }
 
                 TransactionLog tl = transactionLogService.saveTransactionLog("Maestro Store", "M",
@@ -147,20 +153,20 @@ public class StoreServiceImpl implements StoreService {
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(true);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Registro Correcto");
+                    responseDto.setMessage(Constants.MESSAGE_OK_MAESTRO + " Se enviaron " + okCount + " registros");
                 } else {
                     status = storeDtoList.size() == responseApi.getErrors().size() ? "F" : "FP";
                     responseDto.setCode(HttpStatus.OK.value());
                     responseDto.setStatus(false);
                     responseDto.setBody(responseApi);
-                    responseDto.setMessage("Ocurrio un error");
+                    responseDto.setMessage(Constants.MESSAGE_FALLO_MAESTRO + " Se enviaron " + okCount + " registros, " + errosCount + " registros fallidos.");
                 }
 
             } else {
                 responseDto.setCode(HttpStatus.OK.value());
                 responseDto.setStatus(false);
                 responseDto.setBody(responseApi);
-                responseDto.setMessage("No existen registros en la tabla SWLI.STORE");
+                responseDto.setMessage(Constants.MESSAGE_NOT_DATA_LIST);
             }
 
         } catch (Exception e) {
