@@ -105,7 +105,7 @@ public class ProviderExitServiceImpl implements ProviderExitService{
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(providerExit.getRtvPriorId());
+                    errorsDtoLi.setIdentifier(providerExit.getPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

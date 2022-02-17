@@ -104,7 +104,7 @@ public class MerchandiseTransferServiceImpl implements MerchandiseTransferServic
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(merchandiseTransfer.getTransSource());
+                    errorsDtoLi.setIdentifier(merchandiseTransfer.getTransPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

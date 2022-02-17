@@ -139,7 +139,7 @@ public class MaterialServiceImpl implements MaterialService{
                 for (MaterialDto materialDto : materialDtoList) {
                     boolean valid = positionsError.contains(materialDtoList.indexOf(materialDto));
                     if(!valid) {
-                        materialRepository.updateMaterial(materialDto.getInka().trim());
+                        materialRepository.updateMaterial(materialDto.getInka());
                     }
 
                 }
@@ -192,7 +192,7 @@ public class MaterialServiceImpl implements MaterialService{
             materialDto.setControl(material.getControl());
             materialDto.setDescripcion(material.getDescription());
             materialDto.setFamilia(material.getFamily());
-            materialDto.setInka(material.getInka().trim());
+            materialDto.setInka(material.getInka());
             materialDto.setMifa(material.getMifa());
             materialDto.setPrecioUnitario(material.getUnitPrice());
             materialDto.setSurtido(material.getAssortment());

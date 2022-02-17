@@ -104,7 +104,7 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(inventoryAdjustment.getTransSource());
+                    errorsDtoLi.setIdentifier(inventoryAdjustment.getTransPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

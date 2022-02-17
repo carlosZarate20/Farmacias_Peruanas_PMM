@@ -103,7 +103,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(cdTransferIn.getTrfSourceId());
+                    errorsDtoLi.setIdentifier(cdTransferIn.getPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

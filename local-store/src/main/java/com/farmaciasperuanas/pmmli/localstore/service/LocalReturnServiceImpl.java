@@ -97,7 +97,7 @@ public class LocalReturnServiceImpl implements LocalReturnService{
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(localReturn.getTrfSourceId());
+                    errorsDtoLi.setIdentifier(localReturn.getPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

@@ -105,7 +105,7 @@ public class CdTransferOutServiceImpl implements CdTransferOutService {
                     errorsDtoList.add(errorsDtoBody);
 
                     ErrorsDto errorsDtoLi = new ErrorsDto();
-                    errorsDtoLi.setIdentifier(cdTransferOut.getTrfSourceId());
+                    errorsDtoLi.setIdentifier(cdTransferOut.getPrdLvlNumber());
                     errorsDtoLi.setMessage(codErrorSdi.getRejDesc());
                     listResponseBody.add(errorsDtoLi);
                 }

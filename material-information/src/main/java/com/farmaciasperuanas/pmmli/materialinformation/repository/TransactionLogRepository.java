@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface TransactionLogRepository extends JpaRepository<TransactionLog, Long>, JpaSpecificationExecutor<TransactionLog> {
 
-    @Query(value = "select MAX(CANT_TRANSACTION) as CANT_TRANSACTION from SWLI.TRANSACTION_LOG where TYPE_TRANSACTION = :type", nativeQuery = true)
+    @Query(value = "select MAX(CANT_TRANSACTION) as CANT_TRANSACTION from SWLI.TRANSACTION_LOG where CODE_TRANSACTION = :type", nativeQuery = true)
     Integer getCanTransaction(@Param("type") String type);
 
 //    @Query(value = "select Count(*) from SWLI.TRANSACTION_LOG where TYPE_TRANSACTION = :type", nativeQuery = true)
