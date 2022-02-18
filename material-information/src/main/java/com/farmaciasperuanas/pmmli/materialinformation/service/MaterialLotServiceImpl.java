@@ -193,7 +193,7 @@ public class MaterialLotServiceImpl implements MaterialLotService{
         List<MaterialLot> materialLotList = new ArrayList<>();
 
         materialLotList = materialLotRepository.getListMaterialLot();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
         for(MaterialLot materialLot: materialLotList){
             MaterialLotDto materialLotDto = new MaterialLotDto();

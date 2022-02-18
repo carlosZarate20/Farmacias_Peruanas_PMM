@@ -132,6 +132,7 @@ public class InventoryAdjustmentServiceImpl implements InventoryAdjustmentServic
                 responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(transSession);
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_INVENTORY_ADJUSTMENT,

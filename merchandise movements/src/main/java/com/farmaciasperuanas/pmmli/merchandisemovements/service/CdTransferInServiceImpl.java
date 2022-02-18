@@ -54,19 +54,23 @@ public class CdTransferInServiceImpl implements CdTransferInService {
         Integer contTechKey = 1;
         List<ErrorsDto> errorsDtoList = new ArrayList<>();
         List<ErrorsDto> listResponseBody = new ArrayList<>();
+        Integer trfNumber = 0;
         try {
             ObjectMapper mapper = new ObjectMapper();
             //obtenemos el correlativo session_number
             sessionNumber = cdTransferInRepository.getSessionNumber();
 
-//            //insertamos en nuestra tabla intermedia
+            //insertamos en nuestra tabla intermedia
             for (CdTransferInDto dto : providerExitDtoList) {
                 CdTransferIn cdTransferIn = new CdTransferIn();
                 cdTransferIn.setSessionNumber(sessionNumber);
                 cdTransferIn.setTechKey(contTechKey);
-                cdTransferIn.setTrfNumber(dto.getTrfNumber());
                 cdTransferIn.setCarrierName(dto.getCarrierName().isEmpty() ? null : dto.getCarrierName());
                 cdTransferIn.setCartonNumber(dto.getCartonNumber().isEmpty() ? null : dto.getCartonNumber());
+
+                trfNumber = cdTransferInRepository.getTrfNumber(cdTransferIn.getCartonNumber());
+                cdTransferIn.setTrfNumber(trfNumber);
+
                 cdTransferIn.setPrdLvlNumber(dto.getPrdLvlNumber());
                 cdTransferIn.setJdaOrigin(Constants.JDA_ORIGIN_IN);
                 cdTransferIn.setTrfReasonCode(dto.getTrfReasonCode());
@@ -131,6 +135,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(sessionNumber);
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION_IN,

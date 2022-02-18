@@ -26,6 +26,9 @@ public class Material implements Serializable {
     @Column(name = "MIFA")
     private String mifa;
 
+    @Column(name = "PRD_LVL_CHILD")
+    private Integer prdLvlChild;
+
     @Column(name = "DESCRIPTION")
     private String description;
 
@@ -61,5 +64,4 @@ public class Material implements Serializable {
 
     @Column(name = "FLAGLI")
     private Long flagLi;
-
 }

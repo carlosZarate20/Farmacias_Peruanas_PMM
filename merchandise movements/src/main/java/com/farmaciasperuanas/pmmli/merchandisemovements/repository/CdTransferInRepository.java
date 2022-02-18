@@ -27,4 +27,9 @@ public interface CdTransferInRepository extends JpaRepository<CdTransferIn, Long
     @Query("select cdi from CdTransferIn cdi where cdi.sessionNumber = :sessionNumber and cdi.techKey = :techKey")
     CdTransferIn getCdTransferIn(@Param("sessionNumber") Integer sessionNumber, @Param("techKey") Integer techKey);
 
+    @Query(value = "select d.trf_number " +
+            "from pmm.trfcthee h, pmm.trfctdee d " +
+            "where h.trf_carton_id = :trfCartonId " +
+            "and h.trf_carton_key = d.trf_carton_key", nativeQuery = true)
+    Integer getTrfNumber(@Param("trfCartonId") String trfCartonId);
 }

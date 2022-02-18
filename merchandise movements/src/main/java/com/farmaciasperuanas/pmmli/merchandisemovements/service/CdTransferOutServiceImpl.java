@@ -134,6 +134,7 @@ public class CdTransferOutServiceImpl implements CdTransferOutService {
                 responseDto.setStatus(true);
                 responseDto.setMessage(Constants.MESSAGE_OK_TRANSACTION);
                 responseDto.setCode(HttpStatus.OK.value());
+                responseDto.setBody(sessionNumber);
                 responseBody = mapper.writeValueAsString(responseDto);
 
                 transactionLogService.saveTransactionLog(Constants.NAME_TRANSACTION_OUT,

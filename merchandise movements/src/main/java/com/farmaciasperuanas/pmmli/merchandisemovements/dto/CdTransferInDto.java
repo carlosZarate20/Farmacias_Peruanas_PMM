@@ -12,7 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class CdTransferInDto {
-    private Integer trfNumber;
     private String carrierName;
     private String cartonNumber;
     private String prdLvlNumber;
