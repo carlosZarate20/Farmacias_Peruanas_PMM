@@ -5,7 +5,8 @@ public class Constants {
     public static final String JDA_ORIGIN_OUT = "F";
     public static final String JDA_ORIGIN_IN = "T";
     public static final Integer FROM_LOC = 9002;
-    public static final String ACTION_CODE = "03";
+    public static final String ACTION_CODE_OUT = "03";
+    public static final String ACTION_CODE_IN = "04";
     public static final String TRF_SOURCE_ID = "6";
     public static final String TRF_QTY_FLAG  = "P";
     public static final String NAME_TRANSACTION_OUT = "Traslado entre CD'S salida";

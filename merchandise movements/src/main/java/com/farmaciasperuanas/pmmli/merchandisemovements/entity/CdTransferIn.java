@@ -85,4 +85,7 @@ public class CdTransferIn implements Serializable {
     @Column(name = "TRF_VCTO_LOTE")
     private Date trfVctoLote;
 
+    @Column(name = "RECEIPT_DATE")
+    private Date receiptDate;
+
 }

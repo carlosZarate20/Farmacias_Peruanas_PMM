@@ -72,7 +72,7 @@ public class CdTransferOutServiceImpl implements CdTransferOutService {
                 cdTransferOut.setFromLoc(Constants.FROM_LOC);
                 cdTransferOut.setToLoc(dto.getToLoc());
                 cdTransferOut.setQuantity(dto.getQuantity());
-                cdTransferOut.setActionCode(Constants.ACTION_CODE);
+                cdTransferOut.setActionCode(Constants.ACTION_CODE_OUT);
                 cdTransferOut.setDateCreated(dto.getDateCreated());
                 cdTransferOut.setRequestedBy(dto.getRequestedBy());
                 cdTransferOut.setInnerPackId(cdTransferOutRepository.getInnerPack(cdTransferOut.getPrdLvlNumber()));

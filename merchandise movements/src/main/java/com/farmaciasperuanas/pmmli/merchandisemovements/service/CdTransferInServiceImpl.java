@@ -77,7 +77,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 cdTransferIn.setFromLoc(Constants.FROM_LOC);
                 cdTransferIn.setToLoc(dto.getToLoc());
                 cdTransferIn.setQuantity(dto.getQuantity());
-                cdTransferIn.setActionCode(Constants.ACTION_CODE);
+                cdTransferIn.setActionCode(Constants.ACTION_CODE_IN);
                 cdTransferIn.setDateCreated(dto.getDateCreated());
                 cdTransferIn.setRequestedBy(dto.getRequestedBy());
                 cdTransferIn.setInnerPackId(cdTransferInRepository.getInnerPack(cdTransferIn.getPrdLvlNumber()));
@@ -85,6 +85,7 @@ public class CdTransferInServiceImpl implements CdTransferInService {
                 cdTransferIn.setTrfSourceId(Constants.TRF_SOURCE_ID);
                 cdTransferIn.setTrfLote(dto.getTrfLote());
                 cdTransferIn.setTrfVctoLote(dto.getTrfVctoLote());
+                cdTransferIn.setReceiptDate(dto.getReceiptDate());
 //
                 cdTransferInRepository.save(cdTransferIn);
                 contTechKey++;
