@@ -68,8 +68,14 @@ public class ProviderExit implements Serializable {
     @Column(name = "QUANTITY")
     private Double quantity;
 
+    @Column(name = "REFERENCE")
+    private String reference;
+
     @Column(name = "DATE_CREATED")
     private Date dateCreated;
+
+    @Column(name = "RTV_DTL_NOTES")
+    private String rtvDtlNotes;
 
     @Column(name = "INNER_PACK_ID")
     private Integer innerPackId;

@@ -18,6 +18,8 @@ public class ProviderExitDto {
     private String requestedBy;
     private String rtvPriorId;
     private Integer quantity;
+    private String reference;
+    private String rtvDtlNotes;
     private String rtvLote;
     private Date rtvVctoLote;
 }
